@@ -1,38 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   watcher.c                                          :+:      :+:    :+:   */
+/*   good_sleep.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/19 17:58:42 by mstrauss         ###   ########.fr       */
+/*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
+/*   Updated: 2024/08/18 18:35:07 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	dead_check(t_program *prog)
+int	get_time_ms(void)
 {
-	uint8_t	i;
-	t_philo	**tmp;
-	uint8_t	amount;
+	struct timeval	time;
 
-	tmp = (t_philo **)prog->philos;
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+void	better_sleep(size_t ms)
+{
+	size_t	start;
+	size_t	now;
+
+	start = get_time_ms();
 	while (1)
 	{
-		i = 0;
-		while (i <= prog->amount)
-		{
-			if (!tmp[i]->alive)
-			{
-				// acquire death lock first ?
-				prog->stop = true;
-				break ;
-			}
-			i++;
-		}
-		if (!tmp[i]->alive)
+		usleep(50);
+		now = get_time_ms();
+		if ((now - start) < ms)
 			break ;
 	}
+	return ;
 }

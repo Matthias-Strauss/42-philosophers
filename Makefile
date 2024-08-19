@@ -6,14 +6,16 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/08/04 17:07:30 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/08/16 17:59:34 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME 	= 	philosophers
 
+MAX_THRDS = 200
+
 CC		=	cc
-CFLAGS	=	-Wall -Wextra -Werror #-g -Ofast -ffast-math -march=native -mtune=native -funroll-loops # -fsanitize=address -fsanitize=undefined
+CFLAGS	=	-Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -Ofast -ffast-math -march=native -mtune=native -funroll-loops # -g -fsanitize=address -fsanitize=undefined
 RM		=	rm -rf
 
 INC		=	-Iincludes/
