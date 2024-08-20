@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/19 15:54:18 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/20 20:49:21 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,44 @@
 /*                                   STRUCTS                                  */
 /* -------------------------------------------------------------------------- */
 
+typedef struct s_p_uint
+{
+	unsigned int	val;
+	pthread_mutex_t	mut;
+}					t_p_uint;
+
+typedef struct s_p_bool
+{
+	bool			val;
+	pthread_mutex_t	mut;
+}					t_p_bool;
+
 typedef struct s_philo
 {
 	uint8_t			id;
-	bool			alive;
-	unsigned int	last_meal_time;
+	// bool			alive;
+	t_p_uint		last_meal_time;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	unsigned int	must_eat_amount;
-	pthread_mutex_t	*l_fork_lck;
-	pthread_mutex_t	*r_fork_lck;
-	pthread_mutex_t	*spaghetti_lck;
-	pthread_mutex_t	*speak_lck;
-	pthread_mutex_t	*death_lck;
-}					t_philo;	
+	t_p_bool		*l_fork;
+	t_p_bool		*r_fork;
+	t_p_uint		*speak_lck;
+}					t_philo;
 
+/// @brief speak_lck is also used as a death flag
 typedef struct s_program
 {
 	uint8_t			amount;
+	unsigned int	time_to_die;
+	unsigned int	time_to_eat;
+	unsigned int	time_to_sleep;
+	unsigned int	must_eat_amount;
+	pthread_t		threads[MAX_THREADS];
 	t_philo			philos[MAX_THREADS];
-	pthread_mutex_t	forks[MAX_THREADS];
-	pthread_mutex_t	spaghetti_lck;
-	pthread_mutex_t	speak_lck;
-	pthread_mutex_t	death_lck;
-	bool			stop;
+	t_p_bool		forks[MAX_THREADS];
+	t_p_uint		speak_lck;
 }					t_program;
 
 /* -------------------------------------------------------------------------- */
@@ -72,9 +85,27 @@ typedef struct s_program
 /* -------------------------------------------------------------------------- */
 int					main(int ac, char **av);
 void				print_splash_screen(void);
+int					get_time_ms(void);
+void				better_sleep(size_t ms);
+void				destroy_all_muts(t_program *prog);
 
 /* --------------------------- Argument Validation -------------------------- */
 int					validate_args(int ac, char **av);
 void				validate_arg_count(int count);
+void				validate_positive_num_args(int ac, char **av);
+void				validate_arg_valid_chars(int ac, char **av);
+
+/* ----------------------------- Initialization ----------------------------- */
+void				init_prog(int ac, char **av, t_program *prog);
+
+/* ------------------------------- Philosopher ------------------------------ */
+void				*philo_routine(t_philo *philo, t_program *prog);
+
+/* --------------------------------- Watcher -------------------------------- */
+
+/* ---------------------------------- Utils --------------------------------- */
+int					str_to_int(const char *str);
+int					is_digit(int num);
+int					is_space(int c);
 
 #endif

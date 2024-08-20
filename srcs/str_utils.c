@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   str_to_int.c                                       :+:      :+:    :+:   */
+/*   str_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/12 17:01:48 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/12 18:17:52 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/20 16:06:31 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /// @brief Checks if a character is an ASCII whitespace character
 /// @param c character to check
 /// @return 1 if c is a whitespace, 0 if c isn't a whitespace
-static int	is_space(int c)
+int	is_space(int c)
 {
 	if (c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f'
 		|| c == ' ')
@@ -27,7 +27,7 @@ static int	is_space(int c)
 /// @param num character to check
 /// @return returns character if it IS a digit
 /// 		returns 0 if character is NOT a digit
-static int	is_digit(int num)
+int	is_digit(int num)
 {
 	if (num >= '0' && num <= '9')
 		return (num);

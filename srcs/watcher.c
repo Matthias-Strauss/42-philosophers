@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/19 17:58:42 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/20 19:52:06 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,31 @@ void	dead_check(t_program *prog)
 		i = 0;
 		while (i <= prog->amount)
 		{
-			if (!tmp[i]->alive)
+			if (check_vitals(tmp[i], prog))
 			{
-				// acquire death lock first ?
-				prog->stop = true;
-				break ;
+				prog->break ;
 			}
 			i++;
 		}
-		if (!tmp[i]->alive)
+		if (pthread_mutex_lock())
 			break ;
 	}
+}
+
+void	watcher(t_program *prog)
+{
+	;
+}
+
+bool	check_vitals(t_philo *philo, t_program *prog)
+{
+	pthread_mutex_lock(&philo->last_meal_time.mut);
+	if ((philo->last_meal_time.val + philo->time_to_die) > get_time_ms())
+	{
+		pthread_mutex_lock(&prog->speak_lck.mut);
+		prog->speak_lck.val = 2;
+		pthread_mutex_unlock(&prog->speak_lck.mut);
+		return (false);
+	}
+	return (true);
 }

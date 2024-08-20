@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/08/16 17:59:34 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/08/20 16:09:12 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,9 +25,13 @@ SRC_DIRS =	./srcs
 vpath %.c $(SRC_DIRS)
 vpath %.h includes
 
-SRC = 	main.c \
+SRC =	good_sleep.c \
+		main.c \
+		philo.c \
+		splash_screen.c \
+		str_utils.c \
 		validate_args.c \
-		splash_screen.c
+		watcher.c
 
 HEADERS = philo.h
 

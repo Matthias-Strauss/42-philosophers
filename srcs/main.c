@@ -6,45 +6,99 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/18 11:51:09 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/20 19:54:09 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_params(int ac, char **av, t_philo *philo)
+void	init_prog(int ac, char **av, t_program *prog)
 {
-	philo->amount = str_to_int(av[1]); // replace atoi, LIBFT not authorized
-	philo->time_to_die = str_to_int(av[2]);
-	philo->time_to_eat = str_to_int(av[3]);
-	philo->time_to_sleep = str_to_int(av[4]);
+	prog->amount = str_to_int(av[1]);
+	prog->time_to_die = str_to_int(av[2]);
+	prog->time_to_eat = str_to_int(av[3]);
+	prog->time_to_sleep = str_to_int(av[4]);
 	if (av[5])
-		philo->must_eat_amount = str_to_int(av[5]);
+		prog->must_eat_amount = str_to_int(av[5]);
 	else
-		philo->must_eat_amount = 0;
-}
-
-void	start_watcher(t_program *prog)
-{
+		prog->must_eat_amount = 0;
 }
 
 void	init_philos(t_program *prog)
 {
+	t_philo	**philos;
+	int		i;
+
+	i = 0;
+	philos = prog->philos;
+	while (i < prog->amount)
+	{
+		philos[i]->id = i + 1;
+		// philos[i]->alive = true;
+		philos[i]->last_meal_time.val = 0; // HOW TO FILL THIS?
+		philos[i]->time_to_die = prog->time_to_die;
+		philos[i]->time_to_eat = prog->time_to_eat;
+		philos[i]->time_to_sleep = prog->time_to_sleep;
+		philos[i]->must_eat_amount = prog->must_eat_amount;
+		philos[i]->l_fork_lck = &prog->forks[i];
+		philos[i]->r_fork_lck = &prog->forks[(i + 1) % prog->amount];
+		philos[i]->speak_lck = &prog->speak_lck;
+		i++;
+	}
+}
+
+void	init_mutexs(t_program *prog)
+{
+	t_p_bool	**forks;
+	int			i;
+
+	i = 0;
+	forks = prog->forks;
+	while (i < prog->amount)
+	{
+		forks[i]->val = true;
+		if (pthread_mutex_init(&forks[i]->val, NULL) != 0)
+		{
+			printf("ERROR while initializing Mutex.\n");
+			exit(1);
+		}
+		i++;
+	}
+	if (pthread_mutex_init(&prog->speak_lck, NULL) != 0)
+	{
+		printf("ERROR while initializing Mutex.\n");
+		exit(1);
+	}
+}
+
+void	launch_threads(t_program *prog, pthread_t **threads)
+{
+	int	i;
+
+	i = 0;
+	while (i < prog->amount)
+	{
+		if (pthread_create(threads[i], NULL, philo_routine, NULL) != 0)
+		{
+			printf("Error while launching thread.\n");
+			exit(2);
+		}
+		i++;
+	}
 }
 
 int	main(int ac, char **av)
 {
-	t_program		prog;
-	t_philo			philo[MAX_THREADS];
-	pthread_mutex_t	fork[MAX_THREADS];
+	t_program	prog;
+	t_philo		philo[MAX_THREADS];
 
 	validate_args(ac, av);
 	print_splash_screen();
-	init_params(ac, av, &prog);
+	init_prog(ac, av, &prog);
 	init_philos(&prog);
-	init_forks(&prog, &fork);
-	// start_watcher(&prog);
-	monitoring_loop(&prog);
+	launch_threads(&prog, &prog.threads);
+	watcher(&prog);
+	destroy_all_muts(&prog);
 	return (0);
 }
 
