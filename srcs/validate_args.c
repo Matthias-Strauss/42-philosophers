@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:04:31 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/20 18:08:13 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/27 15:46:39 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,19 @@ int	validate_args(int ac, char **av)
 	(void)av;
 	validate_arg_count(ac);
 	validate_max_philos(av);
-	validate_positive_num(ac, av);
-	validate_arg_val_chars(ac, av);
+	validate_positive_num_args(ac, av);
+	validate_arg_valid_chars(ac, av);
 	return (1);
 }
 
 void	validate_max_philos(char **av)
 {
 	if (str_to_int(av[1]) > MAX_THREADS)
-		printf("The maximum amount of philosophers is \
-					% s.\nPlease provide a number between 1 and \
-				% s.",
-			MAX_THREADS,
-			MAX_THREADS);
-	exit(1);
+	{
+		printf("The maximum amount of philosophers is %d.\n", MAX_THREADS);
+		printf("Please provide a number between 1 and %d.", MAX_THREADS);
+		exit(1);
+	}
 }
 
 /// @brief validates that mandatory arguments are given
@@ -60,7 +59,7 @@ void	validate_positive_num_args(int ac, char **av)
 	i = 1;
 	while (i < ac)
 	{
-		if ((*av[i] == '-'))
+		if (*av[i] == '-')
 		{
 			printf("NEGATIVE ARGUMENT DETECTED -- ABORT\n");
 			exit(1);
@@ -78,9 +77,9 @@ void	validate_arg_valid_chars(int ac, char **av)
 	int	j;
 
 	i = 1;
-	j = 0;
-	while (i <= ac)
+	while (i < ac)
 	{
+		j = 0;
 		while (av[i][j])
 		{
 			if (!(is_digit(av[i][j])))
