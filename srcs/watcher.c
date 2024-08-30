@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/27 15:51:39 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/29 15:43:05 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,18 @@ void	watcher(t_program *prog)
 
 void	dead_check_loop(t_program *prog)
 {
-	uint8_t	i;
-	t_philo	**tmp;
+	unsigned int	i;
+	unsigned int	amount;
+	t_philo			*tmp;
 
-	// uint8_t	amount;
-	tmp = (t_philo **)prog->philos;
+	amount = prog->amount;
 	while (!stop_flag_raised(prog))
 	{
+		tmp = prog->philos;
 		i = 0;
-		while (!stop_flag_raised(prog) && i < prog->amount)
+		while (!stop_flag_raised(prog) && i < amount)
 		{
-			if (!check_vitals(tmp[i], prog))
+			if (!check_vitals(&tmp[i], prog))
 				break ;
 			i++;
 		}
@@ -67,7 +68,7 @@ bool	stop_flag_raised(t_program *prog)
 
 void	kill_all(t_program *prog)
 {
-	int	i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < prog->amount)

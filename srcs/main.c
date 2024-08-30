@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/27 15:33:58 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/30 13:01:36 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,20 @@ void	init_prog(char **av, t_program *prog)
 		prog->must_eat_amount = str_to_int(av[5]);
 	else
 		prog->must_eat_amount = -1;
+	prog->stop.val = false;
 }
 
 void	init_philos(t_program *prog)
 {
-	t_philo	*philos;
-	int		i;
+	t_philo			*philos;
+	unsigned int	i;
 
 	i = 0;
 	philos = prog->philos;
 	while (i < prog->amount)
 	{
 		philos[i].id = i + 1;
-		philos[i].alive.val = true;
+		set_mut_struct_bool(philos[i].alive, true);
 		// add mutex locking before writing, also next line
 		philos[i].last_meal_time.val = 0; // HOW TO FILL THIS?
 		philos[i].time_to_die = prog->time_to_die;
@@ -51,13 +52,23 @@ void	init_philos(t_program *prog)
 void	init_mutexs(t_program *prog)
 {
 	pthread_mutex_t	*forks;
-	int				i;
+	unsigned int	i;
 
 	i = 0;
 	forks = prog->forks;
 	while (i < prog->amount)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		{
+			printf("ERROR while initializing Mutex.\n");
+			exit(1);
+		}
+		if (pthread_mutex_init(&prog->philos[i].alive.mut, NULL) != 0)
+		{
+			printf("ERROR while initializing Mutex.\n");
+			exit(1);
+		}
+		if (pthread_mutex_init(&prog->philos[i].last_meal_time.mut, NULL) != 0)
 		{
 			printf("ERROR while initializing Mutex.\n");
 			exit(1);
@@ -69,11 +80,16 @@ void	init_mutexs(t_program *prog)
 		printf("ERROR while initializing Mutex.\n");
 		exit(1);
 	}
+	if (pthread_mutex_init(&(prog->stop.mut), NULL) != 0)
+	{
+		printf("ERROR while initializing Mutex.\n");
+		exit(1);
+	}
 }
 
 void	launch_threads(t_program *prog)
 {
-	int	i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < prog->amount)
@@ -88,6 +104,31 @@ void	launch_threads(t_program *prog)
 	}
 }
 
+void	set_start_time(t_program *prog)
+{
+	unsigned int	i;
+	unsigned int	start_time;
+	int				time_delta;
+	t_philo			*philo;
+
+	i = 0;
+	start_time = get_time_ms() + 1000;
+	// CHECK THIS FOR:
+	// impossible to survive, negative time_delta
+	// -> ignore and start with uniform time
+	time_delta = (prog->time_to_die - (prog->time_to_sleep
+				+ prog->time_to_sleep)) / prog->amount;
+	if ((int)time_delta < 0)
+		time_delta = 0;
+	philo = prog->philos;
+	while (i < prog->amount)
+	{
+		(philo[i]).start_time = start_time + (time_delta * i);
+		set_mut_struct_bool(philo[i].last_meal_time, (philo[i]).start_time);
+		i++;
+	}
+}
+
 int	main(int ac, char **av)
 {
 	t_program	prog;
@@ -95,7 +136,9 @@ int	main(int ac, char **av)
 	print_splash_screen();
 	validate_args(ac, av);
 	init_prog(av, &prog);
+	init_mutexs(&prog);
 	init_philos(&prog);
+	set_start_time(&prog);
 	launch_threads(&prog);
 	watcher(&prog);
 	// destroy_all_muts(&prog);

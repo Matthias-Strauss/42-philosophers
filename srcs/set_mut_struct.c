@@ -1,37 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   good_sleep.c                                       :+:      :+:    :+:   */
+/*   set_mut_struct.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 12:45:45 by mstrauss         ###   ########.fr       */
+/*   Created: 2024/08/30 12:52:15 by mstrauss          #+#    #+#             */
+/*   Updated: 2024/08/30 14:22:02 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	get_time_ms(void)
+bool	set_mut_struct_bool(t_p_bool *pair, bool value)
 {
-	struct timeval	time;
-
-	gettimeofday(&time, NULL);
-	return ((long)time.tv_sec * 1000 + (long)time.tv_usec / 1000);
+	pthread_mutex_lock(&pair->mut);
+	pair->val = value;
+	pthread_mutex_unlock(&pair->mut);
+	return (true);
 }
 
-void	better_sleep(size_t ms)
+bool	set_mut_struct_long(t_p_bool *pair, long value)
 {
-	size_t	start;
-	size_t	now;
-
-	start = get_time_ms();
-	while (1)
-	{
-		usleep(50);
-		now = get_time_ms();
-		if ((now - start) < ms)
-			break ;
-	}
-	return ;
+	pthread_mutex_lock(&pair->mut);
+	pair->val = value;
+	pthread_mutex_unlock(&pair->mut);
+	return (true);
 }

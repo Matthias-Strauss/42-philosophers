@@ -6,15 +6,23 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/27 13:09:43 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/30 18:31:24 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
+
 # ifndef MAX_THREADS
 #  define MAX_THREADS 200
 # endif
+
+# ifdef DEBUG
+#  define DEBUG_FLAG true
+# else
+#  define DEBUG_FLAG false
+# endif
+
 # include <pthread.h>
 # include <stdbool.h> // Add this line
 # include <stddef.h>
@@ -41,9 +49,9 @@
 /*                                   STRUCTS                                  */
 /* -------------------------------------------------------------------------- */
 
-typedef struct s_p_uint
+typedef struct s_p_long
 {
-	unsigned int	val;
+	long			val;
 	pthread_mutex_t	mut;
 }					t_p_uint;
 
@@ -55,41 +63,70 @@ typedef struct s_p_bool
 
 typedef struct s_philo
 {
-	uint8_t			id;
-	t_p_bool		alive;
+	pthread_mutex_t	*l_fork;
+	pthread_mutex_t	*r_fork;
+	pthread_mutex_t	*speak_lck;
 	t_p_uint		last_meal_time;
+	long			start_time;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	unsigned int	must_eat_amount;
-	pthread_mutex_t	*l_fork;
-	pthread_mutex_t	*r_fork;
-	pthread_mutex_t	*speak_lck;
+	unsigned int	id;
+	t_p_bool		alive;
 }					t_philo;
 
-/// @brief speak_lck is also used as a death flag
 typedef struct s_program
 {
-	uint8_t			amount;
+	pthread_mutex_t	forks[MAX_THREADS];
+	pthread_mutex_t	speak_lck;
+	pthread_t		threads[MAX_THREADS];
+	t_philo			philos[MAX_THREADS];
+	unsigned int	amount;
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
 	int				must_eat_amount;
-	pthread_t		threads[MAX_THREADS];
-	t_philo			philos[MAX_THREADS];
-	pthread_mutex_t	forks[MAX_THREADS];
-	pthread_mutex_t	speak_lck;
 	t_p_bool		stop;
 }					t_program;
+// typedef struct s_philo
+// {
+// 	unsigned int	id;
+// 	t_p_bool		alive;
+// 	t_p_uint		last_meal_time;
+// 	unsigned int	time_to_die;
+// 	unsigned int	time_to_eat;
+// 	unsigned int	time_to_sleep;
+// 	unsigned int	must_eat_amount;
+// 	pthread_mutex_t	*l_fork;
+// 	pthread_mutex_t	*r_fork;
+// 	pthread_mutex_t	*speak_lck;
+// }					t_philo;
+
+// typedef struct s_program
+// {
+// 	unsigned int	amount;
+// 	unsigned int	time_to_die;
+// 	unsigned int	time_to_eat;
+// 	unsigned int	time_to_sleep;
+// 	int				must_eat_amount;
+// 	pthread_t		threads[MAX_THREADS];
+// 	t_philo			philos[MAX_THREADS];
+// 	pthread_mutex_t	forks[MAX_THREADS];
+// 	pthread_mutex_t	speak_lck;
+// 	t_p_bool		stop;
+// }					t_program;
 
 /* -------------------------------------------------------------------------- */
 /*                                  FUNCTIONS                                 */
 /* -------------------------------------------------------------------------- */
 int					main(int ac, char **av);
 void				print_splash_screen(void);
-unsigned int		get_time_ms(void);
+long				get_time_ms(void);
 void				better_sleep(size_t ms);
+void				set_start_time(t_program *prog);
 void				destroy_all_muts(t_program *prog);
+bool				set_mut_struct_bool(t_p_bool *pair, bool value);
 
 /* --------------------------- Argument Validation -------------------------- */
 int					validate_args(int ac, char **av);
@@ -114,7 +151,7 @@ void				p_sleep(t_philo *philo);
 void				p_think(t_philo *philo);
 
 bool				alive(t_philo *philo);
-void				announce(t_philo *philo, uint32_t time, char *msg);
+void				announce(t_philo *philo, long time, char *msg);
 void				die(t_philo *philo);
 
 bool				get_fork(pthread_mutex_t *fork);

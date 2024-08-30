@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/08/27 15:39:17 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/08/30 18:30:18 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME 	= 	philosophers
 MAX_THRDS = 200
 
 CC		=	cc
-CFLAGS	=	-Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -Ofast -ffast-math -march=native -mtune=native -funroll-loops -g # -fsanitize=address -fsanitize=undefined
+CFLAGS	=	-Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -g -ggdb -O2 #-Ofast -ffast-math -march=native -mtune=native -funroll-loops  # -fsanitize=address -fsanitize=undefined
 RM		=	rm -rf
 
 INC		=	-Iincludes/
@@ -32,7 +32,8 @@ SRC =	good_sleep.c \
 		str_utils.c \
 		validate_args.c \
 		watcher.c \
-		philo_utils.c
+		philo_utils.c \
+		set_mut_struct.c
 
 HEADERS = philo.h
 
@@ -51,7 +52,7 @@ start_compile:
 	@printf "$(BLUE)Compiling Philosophers...$(NO_COLOR)\n"
 
 $(NAME): $(OBJ)
-	@$(CC) $(CFLAGS) $(OBJ) -o $@ $(LIB)
+	@$(CC) $(CFLAGS) -lpthread $(OBJ) -o $@ $(LIB)
 	@printf "$(GREEN)SUCCESS - $(NAME) has been successfully compiled$(NO_COLOR)\n"
 	@printf "$(GREEN)Compiling Files: Done$(NO_COLOR)\n"
 

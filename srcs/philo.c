@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:17:51 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/27 12:58:10 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/30 12:50:36 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	announce(philo, get_time_ms(), "thread started\n"); // DBG
 	while (alive(philo))
 	{
 		if (p_acquire_utensils(philo))
@@ -106,10 +107,10 @@ bool	alive(t_philo *philo)
 	}
 }
 
-void	announce(t_philo *philo, uint32_t time, char *msg)
+void	announce(t_philo *philo, long time, char *msg)
 {
 	get_voice(philo);
-	printf("%d %d %s\n", time, philo->id, msg);
+	printf("%ld %d %s\n", time, philo->id, msg);
 	return_voice(philo);
 }
 
