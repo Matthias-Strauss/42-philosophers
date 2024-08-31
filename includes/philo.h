@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 02:07:11 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 18:50:23 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,11 @@ typedef struct s_philo
 	uint64_t		time_to_die;
 	uint64_t		time_to_eat;
 	uint64_t		time_to_sleep;
-	unsigned int	must_eat_amount;
-	unsigned int	id;
+	uint64_t		must_eat_amount;
+	uint64_t		amount_eaten;
+	uint64_t		id;
 	t_p_bool		alive;
+	t_p_bool		*stop;
 }					t_philo;
 
 typedef struct s_program
@@ -83,11 +85,11 @@ typedef struct s_program
 	pthread_mutex_t	speak_lck;
 	pthread_t		threads[MAX_THREADS];
 	t_philo			philos[MAX_THREADS];
-	unsigned int	amount;
-	unsigned int	time_to_die;
-	unsigned int	time_to_eat;
-	unsigned int	time_to_sleep;
-	int				must_eat_amount;
+	uint64_t		amount;
+	uint64_t		time_to_die;
+	uint64_t		time_to_eat;
+	uint64_t		time_to_sleep;
+	uint64_t		must_eat_amount;
 	t_p_bool		stop;
 }					t_program;
 // typedef struct s_philo
@@ -152,6 +154,8 @@ void				launch_threads(t_program *prog);
 
 /* ------------------------------- Philosopher ------------------------------ */
 void				*philo_routine(void *arg);
+void				*single_philo_routine(void *arg);
+
 bool				p_acquire_utensils(t_philo *philo);
 void				p_return_utensils(t_philo *philo);
 void				p_eat(t_philo *philo);
@@ -159,7 +163,7 @@ void				p_sleep(t_philo *philo);
 void				p_think(t_philo *philo);
 
 bool				alive(t_philo *philo);
-void				announce(t_philo *philo, uint64_t time, char *msg);
+void				announce(t_philo *philo, /*uint64_t time,*/ char *msg);
 void				die(t_philo *philo);
 
 bool				get_fork(pthread_mutex_t *fork);
@@ -177,9 +181,9 @@ bool				return_voice(t_philo *philo);
 void				watcher(t_program *prog);
 void				dead_check_loop(t_program *prog);
 bool				check_vitals(t_philo *philo, t_program *prog);
-bool				stop_flag_raised(t_program *prog);
+bool				stop_flag_raised(t_p_bool *stop_flag);
 void				kill_all(t_program *prog);
-void				raise_stop_flag(t_program *prog);
+void				raise_stop_flag(t_p_bool *stop_flag);
 
 /* ---------------------------------- Utils --------------------------------- */
 int					str_to_int(const char *str);

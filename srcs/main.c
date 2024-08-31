@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 01:53:49 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 16:37:20 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,18 @@ void	init_prog(char **av, t_program *prog)
 void	init_philos(t_program *prog)
 {
 	t_philo			*philos;
+	uint64_t		start_time;
 	unsigned int	i;
 
 	i = 0;
 	philos = prog->philos;
+	start_time = get_time_ms() + (uint64_t)3000;
 	while (i < prog->amount)
 	{
 		philos[i].id = i + 1;
 		set_mut_struct_bool(&philos[i].alive, true);
-		// add mutex locking before writing, also next line
-		philos[i].last_meal_time.val = 0; // HOW TO FILL THIS?
+		philos[i].start_time = start_time;
+		philos[i].last_meal_time.val = philos[i].start_time;
 		philos[i].time_to_die = prog->time_to_die;
 		philos[i].time_to_eat = prog->time_to_eat;
 		philos[i].time_to_sleep = prog->time_to_sleep;
@@ -45,6 +47,7 @@ void	init_philos(t_program *prog)
 		philos[i].l_fork = &prog->forks[i];
 		philos[i].r_fork = &prog->forks[(i + 1) % prog->amount];
 		philos[i].speak_lck = &prog->speak_lck;
+		philos[i].stop = &prog->stop;
 		i++;
 	}
 }
@@ -92,47 +95,56 @@ void	launch_threads(t_program *prog)
 	unsigned int	i;
 
 	i = 0;
-	while (i < prog->amount)
+	if (prog->amount == 1)
 	{
-		if (pthread_create(&(prog->threads[i]), NULL, philo_routine,
+		if (pthread_create(&(prog->threads[i]), NULL, single_philo_routine,
 				&(prog->philos[i])) != 0)
 		{
 			printf("Error while launching thread.\n");
 			exit(2);
 		}
-		i++;
 	}
-}
-
-void	set_start_time(t_program *prog)
-{
-	unsigned int	i;
-	uint64_t		start_time;
-	unsigned int	time_delta;
-	t_philo			*philo;
-
-	i = 0;
-	philo = prog->philos;
-	start_time = get_time_ms() + (uint64_t)1000;
-	printf("Current time: %" PRIu64 "\n", get_time_ms()); // DBG
-	printf("Start   time: %" PRIu64 "\n", start_time);    // DBG
-	// illegal function!!! remove! DBG!
-	// CHECK THIS FOR:
-	// impossible to survive, negative time_delta
-	// -> ignore and start with uniform time
-	time_delta = (prog->time_to_die - (prog->time_to_eat + prog->time_to_sleep))
-		/ prog->amount;
-	// if (time_delta < 0)
-	// 	time_delta = 0;
-	while (i < prog->amount)
+	else
 	{
-		(philo[i]).start_time = start_time + (time_delta * i);
-		set_mut_struct_uint64_t(&philo[i].last_meal_time,
-			(philo[0]).start_time);
-		// takes the time from the first philo
-		i++;
+		while (i < prog->amount)
+		{
+			if (pthread_create(&(prog->threads[i]), NULL, philo_routine,
+					&(prog->philos[i])) != 0)
+			{
+				printf("Error while launching thread.\n");
+				exit(2);
+			}
+			i++;
+		}
 	}
 }
+
+// void	set_start_time(t_program *prog)
+// {
+// 	uint64_t	i;
+// 	uint64_t	start_time;
+// 	uint64_t	time_delta;
+// 	t_philo		*philo;
+
+// 	i = 0;
+// 	philo = prog->philos;
+// 	start_time = get_time_ms() + (uint64_t)1000;
+// 	// printf("Current time: %" PRIu64 "\n", get_time_ms()); // DBG
+// 	// printf("Start   time: %" PRIu64 "\n", start_time);    // DBG
+// 	time_delta = (prog->time_to_die - (prog->time_to_eat
+//				+ prog->time_to_sleep))
+// 		/ prog->amount;
+// 	// if (time_delta < 0) // DBG, actually not but check before submitting
+// 	// 	time_delta = 1;
+// 	while (i < prog->amount)
+// 	{
+// 		(philo[i]).start_time = start_time + (time_delta * i);
+// 		set_mut_struct_uint64_t(&philo[i].last_meal_time,
+// 			(philo[0]).start_time);
+// 		// takes the time from the first philo
+// 		i++;
+// 	}
+// }
 
 int	main(int ac, char **av)
 {
@@ -140,10 +152,10 @@ int	main(int ac, char **av)
 
 	print_splash_screen();
 	validate_args(ac, av);
-	init_prog(av, &prog);
 	init_mutexs(&prog);
+	init_prog(av, &prog);
 	init_philos(&prog);
-	set_start_time(&prog);
+	// set_start_time(&prog);
 	launch_threads(&prog);
 	watcher(&prog);
 	rejoin_threads(&prog);
@@ -161,6 +173,7 @@ void	destroy_all_muts(t_program *prog)
 		pthread_mutex_destroy(&prog->forks[i]);
 		pthread_mutex_destroy(&prog->philos[i].alive.mut);
 		pthread_mutex_destroy(&prog->philos[i].last_meal_time.mut);
+		i++;
 	}
 	pthread_mutex_destroy(&prog->speak_lck);
 	pthread_mutex_destroy(&prog->stop.mut);

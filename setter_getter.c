@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   single_philo.c                                     :+:      :+:    :+:   */
+/*   setter_getter.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/25 20:25:23 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 18:02:48 by mstrauss         ###   ########.fr       */
+/*   Created: 2024/08/31 19:53:32 by mstrauss          #+#    #+#             */
+/*   Updated: 2024/08/31 19:55:28 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*single_philo_routine(void *arg)
-{
-	t_philo	*philo;
+/*
+This file contains setters and getters for all mutex protected variables.
+This should greatly improve readability for the rest of the code.
+*/
 
-	philo = (t_philo *)arg;
-	get_l_fork(philo);
-	announce(philo, " has taken a fork");
-	better_sleep(philo->time_to_die);
-	return_l_fork(philo);
-	die(philo);
-	return (arg);
-}
+/*
+
+t_p_uint64_t
+
+t_p_bool
+
+*/
+
