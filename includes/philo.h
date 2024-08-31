@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 18:31:24 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 02:07:11 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #  define DEBUG_FLAG false
 # endif
 
+# include <inttypes.h> // remove
 # include <pthread.h>
 # include <stdbool.h> // Add this line
 # include <stddef.h>
@@ -49,11 +50,11 @@
 /*                                   STRUCTS                                  */
 /* -------------------------------------------------------------------------- */
 
-typedef struct s_p_long
+typedef struct s_p_uint64_t
 {
-	long			val;
+	uint64_t		val;
 	pthread_mutex_t	mut;
-}					t_p_uint;
+}					t_p_uint64_t;
 
 typedef struct s_p_bool
 {
@@ -66,11 +67,11 @@ typedef struct s_philo
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*speak_lck;
-	t_p_uint		last_meal_time;
-	long			start_time;
-	unsigned int	time_to_die;
-	unsigned int	time_to_eat;
-	unsigned int	time_to_sleep;
+	t_p_uint64_t	last_meal_time;
+	uint64_t		start_time;
+	uint64_t		time_to_die;
+	uint64_t		time_to_eat;
+	uint64_t		time_to_sleep;
 	unsigned int	must_eat_amount;
 	unsigned int	id;
 	t_p_bool		alive;
@@ -122,11 +123,17 @@ typedef struct s_program
 /* -------------------------------------------------------------------------- */
 int					main(int ac, char **av);
 void				print_splash_screen(void);
-long				get_time_ms(void);
-void				better_sleep(size_t ms);
+uint64_t			get_time_ms(void);
+void				better_sleep(uint64_t ms);
 void				set_start_time(t_program *prog);
 void				destroy_all_muts(t_program *prog);
 bool				set_mut_struct_bool(t_p_bool *pair, bool value);
+uint64_t			set_mut_struct_uint64_t(t_p_uint64_t *pair, uint64_t value);
+void				debug_msg(char *msg, t_philo *philo);
+char				*int_to_str(int n);
+void				wait_to_start(uint64_t start_time);
+void				destroy_all_muts(t_program *prog);
+void				rejoin_threads(t_program *prog);
 
 /* --------------------------- Argument Validation -------------------------- */
 int					validate_args(int ac, char **av);
@@ -134,6 +141,7 @@ void				validate_arg_valid_chars(int ac, char **av);
 void				validate_max_philos(char **av);
 void				validate_arg_count(int count);
 void				validate_positive_num_args(int ac, char **av);
+void				validate_lower_time_lim(int ac, char **av);
 
 /* ----------------------------- Initialization ----------------------------- */
 void				init_prog(char **av, t_program *prog);
@@ -151,7 +159,7 @@ void				p_sleep(t_philo *philo);
 void				p_think(t_philo *philo);
 
 bool				alive(t_philo *philo);
-void				announce(t_philo *philo, long time, char *msg);
+void				announce(t_philo *philo, uint64_t time, char *msg);
 void				die(t_philo *philo);
 
 bool				get_fork(pthread_mutex_t *fork);
@@ -171,6 +179,7 @@ void				dead_check_loop(t_program *prog);
 bool				check_vitals(t_philo *philo, t_program *prog);
 bool				stop_flag_raised(t_program *prog);
 void				kill_all(t_program *prog);
+void				raise_stop_flag(t_program *prog);
 
 /* ---------------------------------- Utils --------------------------------- */
 int					str_to_int(const char *str);

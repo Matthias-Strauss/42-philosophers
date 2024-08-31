@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:17:51 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 12:50:36 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 02:20:57 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,30 +25,49 @@ void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	announce(philo, get_time_ms(), "thread started\n"); // DBG
+	set_mut_struct_uint64_t(&philo->last_meal_time, philo->start_time);
+	wait_to_start(philo->start_time);
 	while (alive(philo))
 	{
-		if (p_acquire_utensils(philo))
+		if (p_acquire_utensils(philo) && alive(philo))
 		{
-			p_eat(philo);
-			p_return_utensils(philo);
-			p_sleep(philo);
-			p_think(philo);
+			if (alive(philo))
+				p_eat(philo);
+			if (alive(philo))
+				p_return_utensils(philo);
+			if (alive(philo))
+				p_sleep(philo);
+			if (alive(philo))
+				p_think(philo);
 		}
 	}
 	return (philo);
+}
+
+void	wait_to_start(uint64_t start_time)
+{
+	uint64_t	sleep_time;
+
+	sleep_time = start_time - get_time_ms();
+	if (sleep_time > 0)
+	{
+		printf("Sleeping for: %" PRIu64 "(ms)\n", sleep_time); // DBG
+		better_sleep(sleep_time);
+	}
+	else
+		printf("ERROR: sleep time negative!\n"); // DBG
 }
 
 bool	p_acquire_utensils(t_philo *philo)
 {
 	if (philo->id % 2 != 0)
 		return (get_r_fork(philo), announce(philo, get_time_ms(),
-				"X has taken a fork\n"), get_l_fork(philo), announce(philo,
-				get_time_ms(), "X has taken a fork\n"), true);
+				"has taken a fork"), get_l_fork(philo), announce(philo,
+				get_time_ms(), "has taken a fork"), true);
 	else
 		return (get_l_fork(philo), announce(philo, get_time_ms(),
-				"X has taken a fork\n"), get_r_fork(philo), announce(philo,
-				get_time_ms(), "X has taken a fork\n"), true);
+				"has taken a fork"), get_r_fork(philo), announce(philo,
+				get_time_ms(), "has taken a fork"), true);
 }
 
 void	p_return_utensils(t_philo *philo)
@@ -67,29 +86,33 @@ void	p_return_utensils(t_philo *philo)
 
 void	p_eat(t_philo *philo)
 {
-	announce(philo, get_time_ms(), "is eating\n");
+	announce(philo, get_time_ms(), "is eating");
 	better_sleep(philo->time_to_eat);
 }
 
 void	p_sleep(t_philo *philo)
 {
-	announce(philo, get_time_ms(), "is sleeping\n");
+	announce(philo, get_time_ms(), "is sleeping");
 	better_sleep(philo->time_to_sleep);
 }
 
 void	p_think(t_philo *philo)
 {
-	announce(philo, get_time_ms(), "is thinking\n");
+	announce(philo, get_time_ms(), "is thinking");
 }
 
 bool	alive(t_philo *philo)
 {
-	unsigned int	time;
+	uint64_t	time;
 
 	// Death through Watcher
+	// printf("Thread %d checking alive\n", philo->id); // DBG
 	pthread_mutex_lock(&philo->alive.mut);
 	if (philo->alive.val == false)
-		return (pthread_mutex_unlock(&philo->alive.mut), false);
+	{
+		pthread_mutex_unlock(&philo->alive.mut);
+		return (true);
+	}
 	pthread_mutex_unlock(&philo->alive.mut);
 	// Death through TIMEOUT
 	pthread_mutex_lock(&philo->last_meal_time.mut);
@@ -97,20 +120,20 @@ bool	alive(t_philo *philo)
 	if (time <= (philo->last_meal_time.val + philo->time_to_die))
 	{
 		pthread_mutex_unlock(&philo->last_meal_time.mut);
-		return (true);
+		return (false);
 	}
 	else
 	{
 		pthread_mutex_unlock(&philo->last_meal_time.mut);
 		die(philo);
-		return (false);
+		return (true);
 	}
 }
 
-void	announce(t_philo *philo, long time, char *msg)
+void	announce(t_philo *philo, uint64_t time, char *msg)
 {
 	get_voice(philo);
-	printf("%ld %d %s\n", time, philo->id, msg);
+	printf("%llu %d %s\n", time - philo->start_time, philo->id, msg);
 	return_voice(philo);
 }
 

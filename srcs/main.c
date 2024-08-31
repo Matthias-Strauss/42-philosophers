@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 13:01:36 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 01:53:49 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	init_philos(t_program *prog)
 	while (i < prog->amount)
 	{
 		philos[i].id = i + 1;
-		set_mut_struct_bool(philos[i].alive, true);
+		set_mut_struct_bool(&philos[i].alive, true);
 		// add mutex locking before writing, also next line
 		philos[i].last_meal_time.val = 0; // HOW TO FILL THIS?
 		philos[i].time_to_die = prog->time_to_die;
@@ -107,24 +107,29 @@ void	launch_threads(t_program *prog)
 void	set_start_time(t_program *prog)
 {
 	unsigned int	i;
-	unsigned int	start_time;
-	int				time_delta;
+	uint64_t		start_time;
+	unsigned int	time_delta;
 	t_philo			*philo;
 
 	i = 0;
-	start_time = get_time_ms() + 1000;
+	philo = prog->philos;
+	start_time = get_time_ms() + (uint64_t)1000;
+	printf("Current time: %" PRIu64 "\n", get_time_ms()); // DBG
+	printf("Start   time: %" PRIu64 "\n", start_time);    // DBG
+	// illegal function!!! remove! DBG!
 	// CHECK THIS FOR:
 	// impossible to survive, negative time_delta
 	// -> ignore and start with uniform time
-	time_delta = (prog->time_to_die - (prog->time_to_sleep
-				+ prog->time_to_sleep)) / prog->amount;
-	if ((int)time_delta < 0)
-		time_delta = 0;
-	philo = prog->philos;
+	time_delta = (prog->time_to_die - (prog->time_to_eat + prog->time_to_sleep))
+		/ prog->amount;
+	// if (time_delta < 0)
+	// 	time_delta = 0;
 	while (i < prog->amount)
 	{
 		(philo[i]).start_time = start_time + (time_delta * i);
-		set_mut_struct_bool(philo[i].last_meal_time, (philo[i]).start_time);
+		set_mut_struct_uint64_t(&philo[i].last_meal_time,
+			(philo[0]).start_time);
+		// takes the time from the first philo
 		i++;
 	}
 }
@@ -141,10 +146,36 @@ int	main(int ac, char **av)
 	set_start_time(&prog);
 	launch_threads(&prog);
 	watcher(&prog);
-	// destroy_all_muts(&prog);
-	// rejoin_threads();
-	// destroy_mutexes();
+	rejoin_threads(&prog);
+	destroy_all_muts(&prog);
 	return (0);
+}
+
+void	destroy_all_muts(t_program *prog)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (i < prog->amount)
+	{
+		pthread_mutex_destroy(&prog->forks[i]);
+		pthread_mutex_destroy(&prog->philos[i].alive.mut);
+		pthread_mutex_destroy(&prog->philos[i].last_meal_time.mut);
+	}
+	pthread_mutex_destroy(&prog->speak_lck);
+	pthread_mutex_destroy(&prog->stop.mut);
+}
+
+void	rejoin_threads(t_program *prog)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (i < prog->amount)
+	{
+		pthread_join(prog->threads[i], NULL);
+		i++;
+	}
 }
 
 /*

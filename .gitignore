@@ -1,6 +1,8 @@
 .DS_Store
 .vscode
 philosophers
+philo
+notes
 pthreads_FAQ.pdf
 splash.txt
 obj/

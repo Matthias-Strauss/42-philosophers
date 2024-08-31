@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/29 15:43:05 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 02:10:13 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ void	dead_check_loop(t_program *prog)
 		while (!stop_flag_raised(prog) && i < amount)
 		{
 			if (!check_vitals(&tmp[i], prog))
+			{
+				raise_stop_flag(prog);
 				break ;
+			}
 			i++;
 		}
 	}
@@ -41,7 +44,8 @@ void	dead_check_loop(t_program *prog)
 bool	check_vitals(t_philo *philo, t_program *prog)
 {
 	pthread_mutex_lock(&philo->last_meal_time.mut);
-	if ((philo->last_meal_time.val + prog->time_to_die) > get_time_ms())
+	if ((philo->last_meal_time.val
+			+ (uint64_t)prog->time_to_die) > get_time_ms())
 	{
 		pthread_mutex_lock(&prog->stop.mut);
 		prog->stop.val = true;
@@ -62,8 +66,17 @@ bool	stop_flag_raised(t_program *prog)
 		return (true);
 	}
 	else
+	{
 		pthread_mutex_unlock(&prog->stop.mut);
-	return (false);
+		return (false);
+	}
+}
+
+void	raise_stop_flag(t_program *prog)
+{
+	pthread_mutex_lock(&prog->stop.mut);
+	prog->stop.val = true;
+	pthread_mutex_unlock(&prog->stop.mut);
 }
 
 void	kill_all(t_program *prog)

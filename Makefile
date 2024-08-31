@@ -6,16 +6,16 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/08/30 18:30:18 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/08/31 02:12:44 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME 	= 	philosophers
+NAME 	= 	philo
 
 MAX_THRDS = 200
 
 CC		=	cc
-CFLAGS	=	-Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -g -ggdb -O2 #-Ofast -ffast-math -march=native -mtune=native -funroll-loops  # -fsanitize=address -fsanitize=undefined
+CFLAGS	=	-DDEBUG=true -Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -g #-Ofast -ffast-math -march=native -mtune=native -funroll-loops  # -fsanitize=address -fsanitize=undefined
 RM		=	rm -rf
 
 INC		=	-Iincludes/
@@ -30,10 +30,12 @@ SRC =	good_sleep.c \
 		philo.c \
 		splash_screen.c \
 		str_utils.c \
+		int_to_str.c \
 		validate_args.c \
 		watcher.c \
 		philo_utils.c \
-		set_mut_struct.c
+		set_mut_struct.c \
+		debug_msg.c
 
 HEADERS = philo.h
 
@@ -73,7 +75,7 @@ fclean:
 
 re: fclean all
 
-debug: CFLAGS += -fsanitize=address -fsanitize=undefined -DDEBUG=true
+#debug: CFLAGS += -fsanitize=address -fsanitize=undefined -DDEBUG=true
 debug: re
 
 # test:

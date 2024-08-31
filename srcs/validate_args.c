@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:04:31 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/27 15:46:39 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/31 01:54:39 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,35 @@ int	validate_args(int ac, char **av)
 	validate_arg_count(ac);
 	validate_max_philos(av);
 	validate_positive_num_args(ac, av);
+	validate_lower_time_lim(ac, av);
 	validate_arg_valid_chars(ac, av);
 	return (1);
+}
+
+void	validate_lower_time_lim(int ac, char **av)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while (i < ac)
+	{
+		j = 0;
+		while (av[i][j])
+		{
+			if (!(is_digit(av[i][j])))
+			{
+				printf("\n\033[31mOOPS! -- Something went wrong.\
+				\n\n\033[0m\nPlease start philosophers with the following \
+				arguments:\n\n• number_of_philosophers\n• time_to_die (>60ms)\
+				\n• time_to_eat (>60ms)\n• time_to_sleep (>60ms)\n\n• (OPTIONAL!) \
+				number_of_times_each_philosopher_must_eat\n\n");
+				exit(1);
+			}
+			j++;
+		}
+		i++;
+	}
 }
 
 void	validate_max_philos(char **av)

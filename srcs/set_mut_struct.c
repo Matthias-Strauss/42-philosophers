@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 12:52:15 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 14:22:02 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/08/30 22:35:52 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ bool	set_mut_struct_bool(t_p_bool *pair, bool value)
 	return (true);
 }
 
-bool	set_mut_struct_long(t_p_bool *pair, long value)
+uint64_t	set_mut_struct_uint64_t(t_p_uint64_t *pair, uint64_t value)
 {
 	pthread_mutex_lock(&pair->mut);
 	pair->val = value;
