@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:17:51 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/02 17:10:42 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/08 15:24:03 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,21 @@ void	wait_to_start(uint64_t start_time)
 bool	p_acquire_utensils(t_philo *philo)
 {
 	if (philo->id % 2 != 0)
-		return (get_r_fork(philo), announce(philo, " has taken a fork"),
-			get_l_fork(philo), announce(philo, " has taken a fork"), true);
+	{
+		get_lock(RIGHT_FORK, philo);
+		announce(philo, " has taken a fork");
+		get_lock(LEFT_FORK, philo);
+		announce(philo, " has taken a fork");
+		return (true);
+	}
 	else
-		return (get_l_fork(philo), announce(philo, " has taken a fork"),
-			get_r_fork(philo), announce(philo, " has taken a fork"), true);
+	{
+		get_lock(LEFT_FORK, philo);
+		announce(philo, " has taken a fork");
+		get_lock(RIGHT_FORK, philo);
+		announce(philo, " has taken a fork");
+		return (true);
+	}
 }
 
 void	p_return_utensils(t_philo *philo)
@@ -140,7 +150,7 @@ void	announce(t_philo *philo, /*uint64_t time,*/ char *msg)
 {
 	uint64_t	time;
 
-	pthread_mutex_lock(philo->speak_lck);
+	get_lock(SPEAK_LOCK, philo);
 	// printf("%" PRIu64 " %" PRIu64 "%s\n", get_time_ms(), philo->id, msg);
 	time = get_time_ms() - philo->start_time;
 	printf("%" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
@@ -151,5 +161,6 @@ void	die(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->alive.mut);
 	philo->alive.val = false;
-	pthread_mutex_unlock(&philo->alive.mut);
+	// pthread_mutex_unlock(&philo->alive.mut);
+	return_all_locks(philo);
 }

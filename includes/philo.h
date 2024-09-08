@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/05 16:55:56 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/08 15:18:55 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct s_philo
 	uint64_t		time_to_eat;
 	uint64_t		time_to_sleep;
 	uint64_t		must_eat_amount;
-	uint64_t		amount_eaten;
+	t_p_uint64_t amount_eaten; // ADD TO INIT!!!!!!!
 	uint64_t		id;
 	uint8_t			locks_held;
 	t_p_bool		alive;
@@ -145,6 +145,9 @@ char				*int_to_str(int n);
 void				wait_to_start(uint64_t start_time);
 void				destroy_all_muts(t_program *prog);
 void				rejoin_threads(t_program *prog);
+bool				get_lock(t_mutex_index mutex_index, t_philo *philo);
+bool				return_lock(t_mutex_index mutex_index, t_philo *philo);
+bool				return_all_locks(t_philo *philo);
 
 /* --------------------------- Argument Validation -------------------------- */
 int					validate_args(int ac, char **av);

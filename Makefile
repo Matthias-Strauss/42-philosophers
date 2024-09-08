@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/08/31 16:36:42 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/08 15:08:54 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,8 @@ SRC =	good_sleep.c \
 		philo_utils.c \
 		set_mut_struct.c \
 		debug_msg.c \
-		single_philo.c
+		single_philo.c \
+		lock_utils.c
 
 HEADERS = philo.h
 
