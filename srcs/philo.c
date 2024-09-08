@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:17:51 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 19:45:37 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:10:42 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,11 +138,12 @@ bool	alive(t_philo *philo)
 
 void	announce(t_philo *philo, /*uint64_t time,*/ char *msg)
 {
-	// uint64_t	time;
+	uint64_t	time;
+
 	pthread_mutex_lock(philo->speak_lck);
-	printf("%" PRIu64 " %" PRIu64 "%s\n", get_time_ms(), philo->id, msg);
-	// time = get_time_ms() - philo->start_time;
-	// printf("%" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
+	// printf("%" PRIu64 " %" PRIu64 "%s\n", get_time_ms(), philo->id, msg);
+	time = get_time_ms() - philo->start_time;
+	printf("%" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
 	pthread_mutex_unlock(philo->speak_lck);
 }
 

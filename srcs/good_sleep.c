@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 22:36:22 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/03 16:56:02 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ uint64_t	get_time_ms(void)
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / 1000));
+	return (((uint64_t)time.tv_sec * (uint64_t)1000) + ((uint64_t)time.tv_usec
+			/ (uint64_t)1000));
 }
 
 void	better_sleep(uint64_t ms)

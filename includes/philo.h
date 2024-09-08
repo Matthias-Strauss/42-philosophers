@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 18:50:23 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/05 16:55:56 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,14 @@
 /*                                   STRUCTS                                  */
 /* -------------------------------------------------------------------------- */
 
+typedef enum e_mutex_index
+{
+	LEFT_FORK = 0,
+	RIGHT_FORK = 1,
+	SPEAK_LOCK = 2,
+	LAST_MEAL = 3,
+	AMOUNT_EATEN = 4
+}					t_mutex_index;
 typedef struct s_p_uint64_t
 {
 	uint64_t		val;
@@ -75,6 +83,7 @@ typedef struct s_philo
 	uint64_t		must_eat_amount;
 	uint64_t		amount_eaten;
 	uint64_t		id;
+	uint8_t			locks_held;
 	t_p_bool		alive;
 	t_p_bool		*stop;
 }					t_philo;
