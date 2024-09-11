@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:48:18 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/08 15:13:27 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/11 19:21:06 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,43 @@ static inline bool	get_lock_continued(t_mutex_index mutex_index,
 		philo->locks_held |= (1U << mutex_index);
 		return (true);
 	}
+	else if (mutex_index == ALIVE)
+	{
+		pthread_mutex_lock(&philo->alive.mut);
+		philo->locks_held |= (1U << mutex_index);
+		return (true);
+	}
+	else if (mutex_index == STOP)
+	{
+		pthread_mutex_lock(&(philo->stop)->mut);
+		philo->locks_held |= (1U << mutex_index);
+		return (true);
+	}
 	else
 		return (false);
 }
 
 /// @brief Dynamically gets a mutex lock corresponding to the calling thread,
 ///			and saves it in locks_held.
-/// @param mutex_index
-/// @param philo
-/// @return
+/// @param mutex_index enum of the mutex ment to be locked
+/// @param philo the philosophers own data
+/// @return true if lock has been taken, false if errors occured
 bool	get_lock(t_mutex_index mutex_index, t_philo *philo)
 {
-	if (philo->locks_held & (1U << mutex_index))
+	/// DBG>
+	// pthread_mutex_lock(philo->speak_lck);
+	// printf("Bitmap %llu: ", philo->id);
+	// for (int i = 7; i >= 0; i--)
+	// {
+	// 	printf("%u", (philo->locks_held >> i) & 1);
+	// }
+	// printf("\n");
+	// pthread_mutex_unlock(philo->speak_lck);
+	/// <DBG
+	if ((philo->locks_held & (1U << mutex_index)))
 	{
-		printf("Error: Lock is already held\n");
+		printf("Error (p_id %llu): %u Lock is already held\n", philo->id,
+				mutex_index); // DBG
 		return (false);
 	}
 	else if (mutex_index == LEFT_FORK)
@@ -64,10 +87,26 @@ bool	get_lock(t_mutex_index mutex_index, t_philo *philo)
 	return (get_lock_continued(mutex_index, philo));
 }
 
+/// @brief Returns a mutex lock held by the thread,
+///			and updates the locks_held bitmap
+/// @param mutex_index enum of the mutex ment to be return
+/// @param philo the philo own data
+/// @return
 bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 {
+	// DBG>
+	// pthread_mutex_lock(philo->speak_lck);
+	// printf("Bitmap %llu: ", philo->id);
+	// for (int i = 7; i >= 0; i--)
+	// {
+	// 	printf("%u", (philo->locks_held >> i) & 1);
+	// }
+	// printf("\n");
+	// pthread_mutex_unlock(philo->speak_lck);
+	// <DBG
 	if (!(philo->locks_held & (1U << mutex_index)))
 	{
+		printf("DBG: philo %llu ", philo->id);
 		printf("Error: Lock being returned isn't held in the first place\n");
 		return (false);
 	}
@@ -96,6 +135,11 @@ bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 		pthread_mutex_unlock(&philo->amount_eaten.mut);
 		philo->locks_held &= ~(1U << mutex_index);
 	}
+	else if (mutex_index == ALIVE)
+	{
+		pthread_mutex_unlock(&philo->alive.mut);
+		philo->locks_held &= ~(1U << mutex_index);
+	}
 	return (true);
 }
 
@@ -106,35 +150,35 @@ bool	return_all_locks(t_philo *philo)
 		pthread_mutex_unlock(philo->l_fork);
 		philo->locks_held &= ~(1U << LEFT_FORK);
 	}
-	else
-		printf("Error: Attempting to return_LEFT_FORK which is not held\n");
 	if (philo->locks_held & (1U << RIGHT_FORK))
 	{
 		pthread_mutex_unlock(philo->r_fork);
 		philo->locks_held &= ~(1U << RIGHT_FORK);
 	}
-	else
-		printf("Error: Attempting to return_RIGHT_FORK which is not held\n");
 	if (philo->locks_held & (1U << SPEAK_LOCK))
 	{
 		pthread_mutex_unlock(philo->speak_lck);
 		philo->locks_held &= ~(1U << SPEAK_LOCK);
 	}
-	else
-		printf("Error: Attempting to return_SPEAK_LOCK which is not held\n");
 	if (philo->locks_held & (1U << LAST_MEAL))
 	{
 		pthread_mutex_unlock(&philo->last_meal_time.mut);
 		philo->locks_held &= ~(1U << LAST_MEAL);
 	}
-	else
-		printf("Error: Attempting to return_LAST_MEAL which is not held\n");
 	if (philo->locks_held & (1U << AMOUNT_EATEN))
 	{
 		pthread_mutex_unlock(&philo->amount_eaten.mut);
 		philo->locks_held &= ~(1U << AMOUNT_EATEN);
 	}
-	else
-		printf("Error: Attempting to return_AMOUNT_EATEN which is not held\n");
+	if (philo->locks_held & (1U << ALIVE))
+	{
+		pthread_mutex_unlock(&philo->alive.mut);
+		philo->locks_held &= ~(1U << ALIVE);
+	}
+	if (philo->locks_held & (1U << STOP))
+	{
+		pthread_mutex_unlock(&philo->stop->mut);
+		philo->locks_held &= ~(1U << STOP);
+	}
 	return (true);
 }

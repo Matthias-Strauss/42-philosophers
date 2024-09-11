@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/08 15:08:54 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/11 17:49:35 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,6 @@ SRC =	good_sleep.c \
 		int_to_str.c \
 		validate_args.c \
 		watcher.c \
-		philo_utils.c \
 		set_mut_struct.c \
 		debug_msg.c \
 		single_philo.c \

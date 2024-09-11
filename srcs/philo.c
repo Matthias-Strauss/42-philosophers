@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:17:51 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/08 15:24:03 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/11 20:44:35 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	set_mut_struct_uint64_t(&philo->last_meal_time, philo->start_time);
 	wait_to_start(philo->start_time);
+	if (philo->id % 2 == 0)
+		usleep(50);
 	// printf("last_meal_time set to: %" PRIu64 "\n",
-	//	philo->last_meal_time.val);
+	// philo->last_meal_time.val);
 	// printf("start_time     set to: %" PRIu64 "\n", philo->start_time);
 	// printf("%" PRIu64 " is entering routine loop\n", philo->id); // DBG
 	while (alive(philo))
@@ -86,23 +88,34 @@ void	p_return_utensils(t_philo *philo)
 {
 	if (philo->id % 2 != 0)
 	{
-		return_l_fork(philo);
-		return_r_fork(philo);
+		return_lock(LEFT_FORK, philo);
+		return_lock(RIGHT_FORK, philo);
+		// announce(philo, " has returned a fork"); // DBG
+		// announce(philo, " has returned a fork"); // DBG
 	}
 	else
 	{
-		return_r_fork(philo);
-		return_l_fork(philo);
+		return_lock(RIGHT_FORK, philo);
+		return_lock(LEFT_FORK, philo);
+		// announce(philo, " has returned a fork"); // DBG
+		// announce(philo, " has returned a fork"); // DBG
 	}
 }
 
 void	p_eat(t_philo *philo)
 {
 	announce(philo, " is eating");
-	pthread_mutex_lock(&philo->last_meal_time.mut);
+	better_sleep(philo->time_to_eat); // MAYBE REVERSE ORDERS????
+	get_lock(LAST_MEAL, philo);
+	if (get_time_ms() >= (philo->last_meal_time.val + philo->time_to_die))
+	{
+		return_lock(LAST_MEAL, philo);
+		die(philo);
+		return ;
+	}
 	philo->last_meal_time.val = get_time_ms();
-	pthread_mutex_unlock(&philo->last_meal_time.mut);
-	better_sleep(philo->time_to_eat);
+	return_lock(LAST_MEAL, philo);
+	update_amount_eaten(philo);
 }
 
 void	p_sleep(t_philo *philo)
@@ -122,26 +135,26 @@ bool	alive(t_philo *philo)
 
 	if (stop_flag_raised(philo->stop))
 		return (die(philo), false);
-	pthread_mutex_lock(&philo->alive.mut);
+	get_lock(ALIVE, philo);
 	if (philo->alive.val == false)
 	{
-		printf("alive val neg, false returned\n"); // DBG
-		pthread_mutex_unlock(&philo->alive.mut);
+		// printf("alive val neg, false returned\n"); // DBG
+		return_lock(ALIVE, philo);
 		return (false);
 	}
-	pthread_mutex_unlock(&philo->alive.mut);
-	pthread_mutex_lock(&philo->last_meal_time.mut);
+	return_lock(ALIVE, philo);
+	get_lock(LAST_MEAL, philo);
 	time = get_time_ms();
 	if (time >= (philo->last_meal_time.val + philo->time_to_die))
 	{
-		printf("Death by starvation triggered\n"); // DBG
-		pthread_mutex_unlock(&philo->last_meal_time.mut);
+		announce(philo, " died");
+		return_lock(LAST_MEAL, philo);
 		die(philo);
 		return (false);
 	}
 	else
 	{
-		pthread_mutex_unlock(&philo->last_meal_time.mut);
+		return_lock(LAST_MEAL, philo);
 		return (true);
 	}
 }
@@ -154,13 +167,26 @@ void	announce(t_philo *philo, /*uint64_t time,*/ char *msg)
 	// printf("%" PRIu64 " %" PRIu64 "%s\n", get_time_ms(), philo->id, msg);
 	time = get_time_ms() - philo->start_time;
 	printf("%" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
-	pthread_mutex_unlock(philo->speak_lck);
+	return_lock(SPEAK_LOCK, philo);
 }
 
 void	die(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->alive.mut);
+	announce(philo, "\033[0;31m died\033[0m");
+	get_lock(ALIVE, philo);
 	philo->alive.val = false;
-	// pthread_mutex_unlock(&philo->alive.mut);
+	return_lock(ALIVE, philo);
 	return_all_locks(philo);
+}
+
+void	update_amount_eaten(t_philo *philo)
+{
+	uint64_t	amount;
+
+	get_lock(AMOUNT_EATEN, philo);
+	philo->amount_eaten.val += 1;
+	amount = philo->amount_eaten.val;
+	return_lock(AMOUNT_EATEN, philo);
+	if (amount == philo->must_eat_amount)
+		raise_stop_flag(philo->stop);
 }

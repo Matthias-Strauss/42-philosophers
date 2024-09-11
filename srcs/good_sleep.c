@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/03 16:56:02 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/11 19:53:58 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,16 @@ uint64_t	get_time_ms(void)
 
 void	better_sleep(uint64_t ms)
 {
-	size_t	start;
-	size_t	now;
+	uint64_t	start;
+	uint64_t	now;
 
 	start = get_time_ms();
-	while (1)
+	// usleep(50);
+	now = get_time_ms();
+	while ((now - start) <= ms)
 	{
 		usleep(50);
 		now = get_time_ms();
-		if ((now - start) >= ms)
-			break ;
 	}
 	return ;
 }

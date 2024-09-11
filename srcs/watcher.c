@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 18:53:18 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/11 18:58:57 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	watcher(t_program *prog)
 {
-	printf("Watcher entering DeathCheckLoop\n"); // DBG
+	// printf("Watcher entering DeathCheckLoop\n"); // DBG
 	dead_check_loop(prog);
-	printf("Watcher entering Kill_All\n"); // DBG
+	// printf("Watcher entering Kill_All\n"); // DBG
 	kill_all(prog);
 }
 
@@ -34,7 +34,7 @@ void	dead_check_loop(t_program *prog)
 		i = 0;
 		while (!stop_flag_raised(&prog->stop) && i < amount)
 		{
-			if (!check_vitals(&tmp[i], prog))
+			if (!check_starvation(&tmp[i], prog))
 			{
 				raise_stop_flag(&prog->stop);
 				break ;
@@ -44,13 +44,12 @@ void	dead_check_loop(t_program *prog)
 	}
 }
 
-bool	check_vitals(t_philo *philo, t_program *prog)
+bool	check_starvation(t_philo *philo, t_program *prog)
 {
 	pthread_mutex_lock(&philo->last_meal_time.mut);
-	if ((philo->last_meal_time.val + prog->time_to_die) < get_time_ms())
+	if (get_time_ms() >= (philo->last_meal_time.val + prog->time_to_die))
 	{
-		// printf("%" PRIu64 " died in CHECK_VITALS (watcher) because of time\n",
-		// philo->id); // DBG
+		announce(philo, " died"); // DBG check if this is done doubly
 		pthread_mutex_lock(&prog->stop.mut);
 		prog->stop.val = true;
 		pthread_mutex_unlock(&prog->stop.mut);
@@ -63,24 +62,17 @@ bool	check_vitals(t_philo *philo, t_program *prog)
 
 bool	stop_flag_raised(t_p_bool *stop_flag)
 {
+	bool	status;
+
 	pthread_mutex_lock(&stop_flag->mut);
-	if (stop_flag->val == true)
-	{
-		pthread_mutex_unlock(&stop_flag->mut);
-		return (true);
-	}
-	else
-	{
-		pthread_mutex_unlock(&stop_flag->mut);
-		return (false);
-	}
+	status = stop_flag->val;
+	pthread_mutex_unlock(&stop_flag->mut);
+	return (status);
 }
 
 void	raise_stop_flag(t_p_bool *stop_flag)
 {
-	pthread_mutex_lock(&stop_flag->mut);
-	stop_flag->val = true;
-	pthread_mutex_unlock(&stop_flag->mut);
+	set_mut_struct_bool(stop_flag, true);
 }
 
 void	kill_all(t_program *prog)

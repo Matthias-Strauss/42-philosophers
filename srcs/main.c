@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/31 16:37:20 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/11 19:57:34 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	init_philos(t_program *prog)
 		philos[i].r_fork = &prog->forks[(i + 1) % prog->amount];
 		philos[i].speak_lck = &prog->speak_lck;
 		philos[i].stop = &prog->stop;
+		philos[i].locks_held = (uint8_t)0;
 		i++;
 	}
 }
@@ -72,6 +73,11 @@ void	init_mutexs(t_program *prog)
 			exit(1);
 		}
 		if (pthread_mutex_init(&prog->philos[i].last_meal_time.mut, NULL) != 0)
+		{
+			printf("ERROR while initializing Mutex.\n");
+			exit(1);
+		}
+		if (pthread_mutex_init(&prog->philos[i].amount_eaten.mut, NULL) != 0)
 		{
 			printf("ERROR while initializing Mutex.\n");
 			exit(1);
@@ -152,6 +158,7 @@ int	main(int ac, char **av)
 
 	print_splash_screen();
 	validate_args(ac, av);
+	prog.amount = str_to_int(av[1]);
 	init_mutexs(&prog);
 	init_prog(av, &prog);
 	init_philos(&prog);
