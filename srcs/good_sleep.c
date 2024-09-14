@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/11 19:53:58 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 19:28:18 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,19 @@ uint64_t	get_time_ms(void)
 			/ (uint64_t)1000));
 }
 
+uint64_t	get_rel_time(t_philo *philo)
+{
+	return (get_time_ms() - philo->start_time);
+}
+
 void	better_sleep(uint64_t ms)
 {
 	uint64_t	start;
 	uint64_t	now;
 
 	start = get_time_ms();
-	// usleep(50);
+	if (ms > 10)
+		usleep((ms - 5) * 1000);
 	now = get_time_ms();
 	while ((now - start) <= ms)
 	{

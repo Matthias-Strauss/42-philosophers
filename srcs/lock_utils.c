@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:48:18 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/11 19:21:06 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:41:50 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,9 @@
 static inline bool	get_lock_continued(t_mutex_index mutex_index,
 		t_philo *philo)
 {
-	if (mutex_index == LAST_MEAL)
-	{
-		pthread_mutex_lock(&philo->last_meal_time.mut);
-		philo->locks_held |= (1U << mutex_index);
-		return (true);
-	}
-	else if (mutex_index == AMOUNT_EATEN)
+	static int	i = 0;
+
+	if (mutex_index == AMOUNT_EATEN)
 	{
 		pthread_mutex_lock(&philo->amount_eaten.mut);
 		philo->locks_held |= (1U << mutex_index);
@@ -39,8 +35,27 @@ static inline bool	get_lock_continued(t_mutex_index mutex_index,
 		philo->locks_held |= (1U << mutex_index);
 		return (true);
 	}
-	else
-		return (false);
+	else if (mutex_index == WAITER)
+	{
+		pthread_mutex_lock(&philo->waiter->mut);
+		if (philo->id == philo->waiter->val + 1
+			|| philo->id == philo->waiter->val - 1)
+		{
+			pthread_mutex_unlock(&philo->waiter->mut);
+			printf("Philo %llu: rejected by WAITER\n", philo->id); // DBG
+			i++;
+			if (i > 100) // DBG
+				exit(1);
+			return (false);
+		}
+		else
+		{
+			philo->waiter->val = philo->id;
+			philo->locks_held |= (1U << mutex_index);
+			return (true);
+		}
+	}
+	return (false);
 }
 
 /// @brief Dynamically gets a mutex lock corresponding to the calling thread,
@@ -50,23 +65,7 @@ static inline bool	get_lock_continued(t_mutex_index mutex_index,
 /// @return true if lock has been taken, false if errors occured
 bool	get_lock(t_mutex_index mutex_index, t_philo *philo)
 {
-	/// DBG>
-	// pthread_mutex_lock(philo->speak_lck);
-	// printf("Bitmap %llu: ", philo->id);
-	// for (int i = 7; i >= 0; i--)
-	// {
-	// 	printf("%u", (philo->locks_held >> i) & 1);
-	// }
-	// printf("\n");
-	// pthread_mutex_unlock(philo->speak_lck);
-	/// <DBG
-	if ((philo->locks_held & (1U << mutex_index)))
-	{
-		printf("Error (p_id %llu): %u Lock is already held\n", philo->id,
-				mutex_index); // DBG
-		return (false);
-	}
-	else if (mutex_index == LEFT_FORK)
+	if (mutex_index == LEFT_FORK)
 	{
 		pthread_mutex_lock(philo->l_fork);
 		philo->locks_held |= (1U << mutex_index);
@@ -84,6 +83,12 @@ bool	get_lock(t_mutex_index mutex_index, t_philo *philo)
 		philo->locks_held |= (1U << mutex_index);
 		return (true);
 	}
+	else if (mutex_index == LAST_MEAL)
+	{
+		pthread_mutex_lock(&philo->last_meal_time.mut);
+		philo->locks_held |= (1U << mutex_index);
+		return (true);
+	}
 	return (get_lock_continued(mutex_index, philo));
 }
 
@@ -94,16 +99,6 @@ bool	get_lock(t_mutex_index mutex_index, t_philo *philo)
 /// @return
 bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 {
-	// DBG>
-	// pthread_mutex_lock(philo->speak_lck);
-	// printf("Bitmap %llu: ", philo->id);
-	// for (int i = 7; i >= 0; i--)
-	// {
-	// 	printf("%u", (philo->locks_held >> i) & 1);
-	// }
-	// printf("\n");
-	// pthread_mutex_unlock(philo->speak_lck);
-	// <DBG
 	if (!(philo->locks_held & (1U << mutex_index)))
 	{
 		printf("DBG: philo %llu ", philo->id);
@@ -138,6 +133,17 @@ bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 	else if (mutex_index == ALIVE)
 	{
 		pthread_mutex_unlock(&philo->alive.mut);
+		philo->locks_held &= ~(1U << mutex_index);
+	}
+	else if (mutex_index == STOP)
+	{
+		pthread_mutex_unlock(&philo->stop->mut);
+		philo->locks_held &= ~(1U << mutex_index);
+	}
+	else if (mutex_index == WAITER)
+	{
+		philo->waiter->val = 202;
+		pthread_mutex_unlock(&philo->waiter->mut);
 		philo->locks_held &= ~(1U << mutex_index);
 	}
 	return (true);
@@ -179,6 +185,12 @@ bool	return_all_locks(t_philo *philo)
 	{
 		pthread_mutex_unlock(&philo->stop->mut);
 		philo->locks_held &= ~(1U << STOP);
+	}
+	if (philo->locks_held & (1U << WAITER))
+	{
+		philo->waiter->val = 202;
+		pthread_mutex_unlock(&philo->waiter->mut);
+		philo->locks_held &= ~(1U << WAITER);
 	}
 	return (true);
 }

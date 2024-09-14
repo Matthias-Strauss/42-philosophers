@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/11 19:30:18 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 17:31:38 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ typedef enum s_mutex_index
 	LAST_MEAL = 3,
 	AMOUNT_EATEN = 4,
 	ALIVE = 5,
-	STOP = 6
+	STOP = 6,
+	WAITER = 7
 }					t_mutex_index;
 typedef struct s_p_uint64_t
 {
@@ -77,9 +78,11 @@ typedef struct s_philo
 	pthread_mutex_t	*l_fork;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*speak_lck;
+	t_p_uint64_t	*waiter;
 	t_p_uint64_t	last_meal_time;
 	t_p_uint64_t	amount_eaten;
 	t_p_bool		alive;
+	uint64_t		philo_count;
 	uint64_t		start_time;
 	uint64_t		time_to_die;
 	uint64_t		time_to_eat;
@@ -94,6 +97,7 @@ typedef struct s_program
 {
 	pthread_mutex_t	forks[MAX_THREADS];
 	pthread_mutex_t	speak_lck;
+	t_p_uint64_t	waiter;
 	t_p_bool		stop;
 	pthread_t		threads[MAX_THREADS];
 	t_philo			philos[MAX_THREADS];
@@ -131,6 +135,20 @@ typedef struct s_program
 // 	pthread_mutex_t	speak_lck;
 // 	t_p_bool		stop;
 // }					t_program;
+
+/* -------------------------------------------------------------------------- */
+/*                               PHILO RREFACTOR                              */
+/* -------------------------------------------------------------------------- */
+void				*philo_routine(void *arg);
+// bool				eat(t_philo *philo);
+bool				consume_food(t_philo *philo);
+bool				sleeep(t_philo *philo);
+bool				think(t_philo *philo);
+bool				announce(t_philo *philo, uint64_t time, char *msg);
+bool				stop(t_philo *philo);
+uint64_t			get_rel_time(t_philo *philo);
+bool				eat_odd(t_philo *philo);
+bool				eat_even(t_philo *philo);
 
 /* -------------------------------------------------------------------------- */
 /*                                  FUNCTIONS                                 */
@@ -178,7 +196,7 @@ void				p_sleep(t_philo *philo);
 void				p_think(t_philo *philo);
 
 bool				alive(t_philo *philo);
-void				announce(t_philo *philo, /*uint64_t time,*/ char *msg);
+// void				announce(t_philo *philo, /*uint64_t time,*/ char *msg);
 void				die(t_philo *philo);
 void				update_amount_eaten(t_philo *philo);
 
@@ -200,6 +218,8 @@ bool				check_starvation(t_philo *philo, t_program *prog);
 bool				stop_flag_raised(t_p_bool *stop_flag);
 void				kill_all(t_program *prog);
 void				raise_stop_flag(t_p_bool *stop_flag);
+void				watcher_announce(t_philo *philo, t_program *prog,
+						char *msg);
 
 /* ---------------------------------- Utils --------------------------------- */
 int					str_to_int(const char *str);

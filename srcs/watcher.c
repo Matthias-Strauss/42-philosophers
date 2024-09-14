@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/11 18:58:57 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 14:57:05 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	watcher(t_program *prog)
 {
-	// printf("Watcher entering DeathCheckLoop\n"); // DBG
+	printf("Time: %llu\n", get_time_ms()); // DBG
 	dead_check_loop(prog);
-	// printf("Watcher entering Kill_All\n"); // DBG
+	printf("Watcher entering Kill_All\n"); // DBG
 	kill_all(prog);
 }
 
@@ -34,7 +34,8 @@ void	dead_check_loop(t_program *prog)
 		i = 0;
 		while (!stop_flag_raised(&prog->stop) && i < amount)
 		{
-			if (!check_starvation(&tmp[i], prog))
+			if (!check_starvation(&tmp[i], prog)
+				|| stop_flag_raised(&prog->stop))
 			{
 				raise_stop_flag(&prog->stop);
 				break ;
@@ -49,7 +50,8 @@ bool	check_starvation(t_philo *philo, t_program *prog)
 	pthread_mutex_lock(&philo->last_meal_time.mut);
 	if (get_time_ms() >= (philo->last_meal_time.val + prog->time_to_die))
 	{
-		announce(philo, " died"); // DBG check if this is done doubly
+		watcher_announce(philo, prog, "\033[0;31m died\033[0m");
+		// DBG check if this is done doubly
 		pthread_mutex_lock(&prog->stop.mut);
 		prog->stop.val = true;
 		pthread_mutex_unlock(&prog->stop.mut);
@@ -87,4 +89,14 @@ void	kill_all(t_program *prog)
 		pthread_mutex_unlock(&((prog->philos)[i]).alive.mut);
 		i++;
 	}
+}
+
+void	watcher_announce(t_philo *philo, t_program *prog, char *msg)
+{
+	uint64_t	time;
+
+	pthread_mutex_lock(&prog->speak_lck);
+	time = get_time_ms() - philo->start_time;
+	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
+	pthread_mutex_unlock(&prog->speak_lck);
 }

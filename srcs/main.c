@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/11 19:57:34 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:39:42 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ void	init_prog(char **av, t_program *prog)
 		prog->must_eat_amount = str_to_int(av[5]);
 	else
 		prog->must_eat_amount = -1;
-	prog->stop.val = false;
+	set_mut_struct_bool(&prog->stop, false);
+	set_mut_struct_uint64_t(&prog->waiter, 202);
 }
 
 void	init_philos(t_program *prog)
@@ -31,15 +32,18 @@ void	init_philos(t_program *prog)
 	uint64_t		start_time;
 	unsigned int	i;
 
-	i = 0;
+	i = -1;
 	philos = prog->philos;
-	start_time = get_time_ms() + (uint64_t)3000;
-	while (i < prog->amount)
+	start_time = get_time_ms() + (uint64_t)1000;
+	while (++i < prog->amount)
 	{
 		philos[i].id = i + 1;
 		set_mut_struct_bool(&philos[i].alive, true);
 		philos[i].start_time = start_time;
-		philos[i].last_meal_time.val = philos[i].start_time;
+		set_mut_struct_uint64_t(&philos[i].last_meal_time,
+			philos[i].start_time);
+		set_mut_struct_uint64_t(&philos[i].amount_eaten, 0);
+		philos[i].philo_count = prog->amount;
 		philos[i].time_to_die = prog->time_to_die;
 		philos[i].time_to_eat = prog->time_to_eat;
 		philos[i].time_to_sleep = prog->time_to_sleep;
@@ -49,7 +53,7 @@ void	init_philos(t_program *prog)
 		philos[i].speak_lck = &prog->speak_lck;
 		philos[i].stop = &prog->stop;
 		philos[i].locks_held = (uint8_t)0;
-		i++;
+		philos[i].waiter = &prog->waiter;
 	}
 }
 
@@ -90,6 +94,11 @@ void	init_mutexs(t_program *prog)
 		exit(1);
 	}
 	if (pthread_mutex_init(&(prog->stop.mut), NULL) != 0)
+	{
+		printf("ERROR while initializing Mutex.\n");
+		exit(1);
+	}
+	if (pthread_mutex_init(&(prog->waiter.mut), NULL) != 0)
 	{
 		printf("ERROR while initializing Mutex.\n");
 		exit(1);
@@ -184,6 +193,7 @@ void	destroy_all_muts(t_program *prog)
 	}
 	pthread_mutex_destroy(&prog->speak_lck);
 	pthread_mutex_destroy(&prog->stop.mut);
+	pthread_mutex_destroy(&prog->waiter.mut);
 }
 
 void	rejoin_threads(t_program *prog)
