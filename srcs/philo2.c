@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 19:20:31 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/14 19:04:45 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 20:21:39 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	wait_to_start(philo->start_time);
 	if (philo->id % 2 == 0)
-		usleep(100); // TIME
+		usleep(philo->time_to_eat / 2); // TIME
 	think(philo);
 	while (!stop(philo))
 	{
@@ -94,17 +94,13 @@ bool	eat_odd(t_philo *philo)
 	// 	usleep(50); // TIME
 	// }
 	if (!get_lock(RIGHT_FORK, philo))
-		return (printf("Philo %llu: eat() failed in line 76\n", philo->id),
-			false);
+		return (false);
 	if (!announce(philo, get_rel_time(philo), " has taken a fork"))
-		return (printf("Philo %llu: eat() failed in line 78\n", philo->id),
-			false);
+		return (false);
 	if (!get_lock(LEFT_FORK, philo))
-		return (printf("Philo %llu: eat() failed in line 72\n", philo->id),
-			false);
+		return (false);
 	if (!announce(philo, get_rel_time(philo), " has taken a fork"))
-		return (printf("Philo %llu: eat() failed in line 74\n", philo->id),
-			false);
+		return (false);
 	// if (!return_lock(WAITER, philo))
 	// 	return (printf("Philo %llu: eat() failed in line 81\n", philo->id),
 	// 		false);
@@ -154,12 +150,12 @@ bool	sleeep(t_philo *philo)
 		return (die(philo), false);
 	timely_death = philo->last_meal_time.val + philo->time_to_die;
 	return_lock(LAST_MEAL, philo);
-	if (time + philo->time_to_sleep >= timely_death)
-	{
-		wait_to_start(timely_death);
-		die(philo);
-		return (false);
-	}
+	// if (time + philo->time_to_sleep >= timely_death)
+	// {
+	// 	wait_to_start(timely_death);
+	// 	die(philo);
+	// 	return (false);
+	// }
 	announce(philo, time - philo->start_time, " is sleeping");
 	better_sleep(philo->time_to_sleep);
 	return (true);
@@ -190,10 +186,8 @@ bool	stop(t_philo *philo)
 	bool	status;
 
 	get_lock(STOP, philo);
-	// printf("Philo %llu: aquired stop lock\n", philo->id);
 	status = philo->stop->val;
 	return_lock(STOP, philo);
-	// printf("Philo %llu: returned stop lock\n", philo->id);
 	return (status);
 }
 

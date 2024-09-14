@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 16:48:18 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/14 16:41:50 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/14 20:38:16 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,16 @@ bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 		printf("Error: Lock being returned isn't held in the first place\n");
 		return (false);
 	}
+	if (mutex_index == SPEAK_LOCK)
+	{
+		pthread_mutex_unlock(philo->speak_lck);
+		philo->locks_held &= ~(1U << mutex_index);
+	}
+	else if (mutex_index == STOP)
+	{
+		pthread_mutex_unlock(&philo->stop->mut);
+		philo->locks_held &= ~(1U << mutex_index);
+	}
 	else if (mutex_index == LEFT_FORK)
 	{
 		pthread_mutex_unlock(philo->l_fork);
@@ -113,11 +123,6 @@ bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 	else if (mutex_index == RIGHT_FORK)
 	{
 		pthread_mutex_unlock(philo->r_fork);
-		philo->locks_held &= ~(1U << mutex_index);
-	}
-	else if (mutex_index == SPEAK_LOCK)
-	{
-		pthread_mutex_unlock(philo->speak_lck);
 		philo->locks_held &= ~(1U << mutex_index);
 	}
 	else if (mutex_index == LAST_MEAL)
@@ -135,17 +140,12 @@ bool	return_lock(t_mutex_index mutex_index, t_philo *philo)
 		pthread_mutex_unlock(&philo->alive.mut);
 		philo->locks_held &= ~(1U << mutex_index);
 	}
-	else if (mutex_index == STOP)
-	{
-		pthread_mutex_unlock(&philo->stop->mut);
-		philo->locks_held &= ~(1U << mutex_index);
-	}
-	else if (mutex_index == WAITER)
-	{
-		philo->waiter->val = 202;
-		pthread_mutex_unlock(&philo->waiter->mut);
-		philo->locks_held &= ~(1U << mutex_index);
-	}
+	// else if (mutex_index == WAITER)
+	// {
+	// 	philo->waiter->val = 202;
+	// 	pthread_mutex_unlock(&philo->waiter->mut);
+	// 	philo->locks_held &= ~(1U << mutex_index);
+	// }
 	return (true);
 }
 
