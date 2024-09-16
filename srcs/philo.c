@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 11:22:41 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 22:12:38 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 23:30:01 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ bool	announce(t_philo *philo, uint_fast64_t time, char *msg)
 {
 	pthread_mutex_lock(&philo->stop->mut);
 	if (philo->stop->val == true)
-		return (pthread_mutex_unlock(&philo->stop->mut),
-				/*return_all_locks(philo),*/ false);
+		return (pthread_mutex_unlock(&philo->stop->mut), false);
 	pthread_mutex_unlock(&philo->stop->mut);
 	pthread_mutex_lock(&philo->speak_lck->mut);
 	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
@@ -80,7 +79,5 @@ bool	satiated(t_philo *philo)
 
 bool	think(t_philo *philo)
 {
-	if (philo->id % 2 == 0)
-		usleep(500);
 	return (announce(philo, get_run_time(philo), " is thinking"));
 }
