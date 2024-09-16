@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/15 23:31:19 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 18:19:10 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	init_philos(t_program *prog)
 
 	i = -1;
 	philos = prog->philos;
-	start_time = get_time_ms() + (uint_fast64_t)1000;
+	start_time = get_time_ms() + (uint_fast64_t)3000;
 	while (++i < prog->amount)
 	{
 		philos[i].id = i + 1;
@@ -160,14 +160,14 @@ void	launch_threads(t_program *prog)
 // 	}
 // }
 
-void	init_waiter(t_program *prog)
-{
-	prog->waiter.group = 0;
-	prog->waiter.skip = 0;
-	prog->waiter.count = 0;
-	prog->waiter.last_skipper = 0;
-	prog->waiter.someone_skipped = 0;
-}
+// void	init_waiter(t_program *prog)
+// {
+// 	prog->waiter.group = 0;
+// 	prog->waiter.skip = 0;
+// 	prog->waiter.count = 0;
+// 	prog->waiter.last_skipper = 0;
+// 	prog->waiter.someone_skipped = 0;
+// }
 
 int	main(int ac, char **av)
 {
@@ -178,7 +178,7 @@ int	main(int ac, char **av)
 	prog.amount = str_to_int(av[1]);
 	init_mutexs(&prog);
 	init_prog(av, &prog);
-	init_waiter(&prog);
+	// init_waiter(&prog);
 	init_philos(&prog);
 	// set_start_time(&prog);
 	launch_threads(&prog);

@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 11:22:41 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 16:12:07 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 19:59:39 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,24 @@ void	*philo_routine(void *arg)
 
 	philo = (t_philo *)arg;
 	wait_to_start(philo->start_time);
-	announce(philo, get_run_time(philo), " is thinking");
-	if (philo->philo_count % 2 == 0)
-	{
-		if (philo->id % 2 == 0)
-			usleep(philo->time_to_eat / 2 * 1000);
-	}
+	think(philo);
+	/*
+	if (philo->philo_count % 2 == 1 && philo->id == philo->philo_count)
+		// make last one wait
+		usleep(philo->time_to_eat * 1100);
+		*/
+	if (philo->id % 2 == 0)
+		usleep(philo->time_to_eat / 2 * 1000);
 	else
 		usleep(philo->id % 20);
-	// if (philo->id % 2 == 0)
-	// 	usleep(50);
-	// usleep(philo->id);
-	// if (philo->id % 2 == 0)
-	// 	usleep(philo->time_to_eat / 2 * 1000);
-	// usleep(philo->time_to_eat / 2 / philo->id * 1000);
+	/*
+	if (philo->id % 2 == 0)
+		usleep(50);
+	usleep(philo->id);
+	if (philo->id % 2 == 0)
+		usleep(philo->time_to_eat / 2 * 1000);
+	usleep(philo->time_to_eat / 2 / philo->id * 1000);
+	*/
 	while (carry_on(philo) == true)
 	{
 		if (philo->id % 2 == 0)
@@ -80,4 +84,17 @@ bool	satiated(t_philo *philo)
 	}
 	pthread_mutex_unlock(&philo->amount_eaten.mut);
 	return (false);
+}
+
+bool	think(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->amount_eaten.mut);
+	if (philo->philo_count % 2 == 1 && philo->amount_eaten.val % 2 == 0
+		&& philo->id == 1)
+		usleep(philo->time_to_eat * 1.1);
+	else if (philo->philo_count % 2 == 1 && philo->amount_eaten.val % 2 == 1
+		&& philo->id == philo->philo_count)
+		usleep(philo->time_to_eat * 1.1);
+	pthread_mutex_unlock(&philo->amount_eaten.mut);
+	return (announce(philo, get_run_time(philo), " is thinking"));
 }

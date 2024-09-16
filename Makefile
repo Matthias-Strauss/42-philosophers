@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/16 11:27:38 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/16 16:33:42 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME 	= 	philo
 MAX_THRDS = 200
 
 CC		=	cc
-CFLAGS	=	-DDEBUG=false -Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -D_REENTRANT -pthread -Ofast -ffast-math -march=native -mtune=native -funroll-loops  -fsanitize=thread,undefined
+CFLAGS	=	-DDEBUG=false -Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -D_REENTRANT -pthread -Ofast -ffast-math -march=native -mtune=native -funroll-loops #  -fsanitize=thread,undefined
 LDFLAGS =	-pthread
 RM		=	rm -rf
 
