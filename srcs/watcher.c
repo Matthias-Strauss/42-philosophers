@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/15 23:31:49 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:29:09 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,9 @@ void	dead_check_loop(t_program *prog)
 			if (!check_starvation(&tmp[i], prog)
 				|| stop_flag_raised(&prog->stop))
 			{
-				raise_stop_flag(&prog->stop);
+				pthread_mutex_lock(&prog->stop.mut);
+				prog->stop.val = true;
+				pthread_mutex_unlock(&prog->stop.mut);
 				break ;
 			}
 			i++;
@@ -72,10 +74,10 @@ bool	stop_flag_raised(t_p_bool *stop_flag)
 	return (status);
 }
 
-void	raise_stop_flag(t_p_bool *stop_flag)
-{
-	set_mut_struct_bool(stop_flag, true);
-}
+// void	raise_stop_flag(t_p_bool *stop_flag)
+// {
+// 	set_mut_struct_bool(stop_flag, true);
+// }
 
 void	kill_all(t_program *prog)
 {

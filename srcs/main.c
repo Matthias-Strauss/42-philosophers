@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 18:19:10 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:35:17 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ void	init_prog(char **av, t_program *prog)
 		prog->must_eat_amount = str_to_int(av[5]);
 	else
 		prog->must_eat_amount = -1;
-	set_mut_struct_bool(&prog->stop, false);
+	pthread_mutex_lock(&prog->stop.mut);
+	prog->stop.val = false;
+	pthread_mutex_unlock(&prog->stop.mut);
 }
 
 void	init_philos(t_program *prog)
@@ -37,11 +39,10 @@ void	init_philos(t_program *prog)
 	while (++i < prog->amount)
 	{
 		philos[i].id = i + 1;
-		set_mut_struct_bool(&philos[i].alive, true);
+		set_alive_val(&philos[i], true);
 		philos[i].start_time = start_time;
-		set_mut_struct_uint_fast64_t(&philos[i].last_meal_time,
-			philos[i].start_time);
-		set_mut_struct_uint_fast64_t(&philos[i].amount_eaten, 0);
+		set_last_meal_time(&philos[i], philos[i].start_time);
+		set_amount_eaten(&philos[i], 0);
 		philos[i].philo_count = prog->amount;
 		philos[i].time_to_die = prog->time_to_die;
 		philos[i].time_to_eat = prog->time_to_eat;
@@ -58,14 +59,14 @@ void	init_philos(t_program *prog)
 
 void	init_mutexs(t_program *prog)
 {
-	pthread_mutex_t	*forks;
+	t_p_bool		*forks;
 	unsigned int	i;
 
 	i = 0;
 	forks = prog->forks;
 	while (i < prog->amount)
 	{
-		if (pthread_mutex_init(&forks[i], NULL) != 0)
+		if (pthread_mutex_init(&forks[i].mut, NULL) != 0)
 		{
 			printf("ERROR while initializing Mutex.\n");
 			exit(1);
@@ -195,7 +196,7 @@ void	destroy_all_muts(t_program *prog)
 	i = 0;
 	while (i < prog->amount)
 	{
-		pthread_mutex_destroy(&prog->forks[i]);
+		pthread_mutex_destroy(&prog->forks[i].mut);
 		pthread_mutex_destroy(&prog->philos[i].alive.mut);
 		pthread_mutex_destroy(&prog->philos[i].last_meal_time.mut);
 		i++;

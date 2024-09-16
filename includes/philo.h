@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 15:54:08 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:54:19 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,8 @@ typedef struct s_waiter
 
 typedef struct s_philo
 {
-	pthread_mutex_t		*l_fork;
-	pthread_mutex_t		*r_fork;
+	t_p_bool			*l_fork;
+	t_p_bool			*r_fork;
 	t_p_uint_fast8_t	*speak_lck;
 	t_p_uint_fast64_t	last_meal_time;
 	t_p_uint_fast64_t	amount_eaten;
@@ -111,12 +111,11 @@ typedef struct s_philo
 	uint8_t				locks_held;
 	t_waiter			*waiter;
 	t_p_bool			*stop;
-	// char				msg[77];
 }						t_philo;
 
 typedef struct s_program
 {
-	pthread_mutex_t		forks[MAX_THREADS];
+	t_p_bool			forks[MAX_THREADS];
 	t_p_uint_fast8_t	speak_lck;
 	t_waiter			waiter;
 	t_p_bool			stop;
@@ -135,6 +134,7 @@ typedef struct s_program
 
 /* ---------------------------------- PHILO --------------------------------- */
 void					*philo_routine(void *arg);
+void					init_time_offsets(t_philo *philo);
 bool					eat_odd(t_philo *philo);
 bool					eat_even(t_philo *philo);
 bool					consume_food(t_philo *philo);
@@ -163,7 +163,7 @@ void					set_last_meal_time(t_philo *philo, uint_fast64_t time);
 uint_fast64_t			get_amount_eaten(t_philo *philo);
 void					set_amount_eaten(t_philo *philo, uint_fast64_t amount);
 bool					get_alive(t_philo *philo);
-void					set_alive(t_philo *philo, bool value);
+void					set_alive_val(t_philo *philo, bool value);
 bool					carry_on(t_philo *philo);
 void					set_stop(t_philo *philo, bool stop);
 

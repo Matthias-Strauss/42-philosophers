@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 22:50:39 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 16:31:17 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 20:29:46 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 void	die(t_philo *philo)
 {
 	set_alive_val(philo, false);
-	// announce(philo, "\033[0;31m died\033[0m");
-	raise_stop_flag(philo->stop);
+	set_stop(philo, false);
 	return_all_locks(philo);
 }
 

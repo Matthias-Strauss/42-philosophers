@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/16 16:33:42 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/16 21:00:58 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,19 +28,17 @@ vpath %.h includes
 
 SRC =	time_n_sleep.c \
 		main.c \
-		philo_timing_dependent.c \
+		philo.c \
 		splash_screen.c \
 		str_utils.c \
 		int_to_str.c \
 		validate_args.c \
 		watcher.c \
-		set_mut_struct.c \
 		single_philo.c \
-		get_n_set.c \
-		waiter.c \
-		philo_utils.c
-# lock_utils.c
-# debug_msg.c
+		getter.c \
+		setter.c \
+		philo_utils.c \
+		fork_utils.c
 
 HEADERS = philo.h
 
