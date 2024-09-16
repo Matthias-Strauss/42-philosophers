@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 20:29:09 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 21:58:47 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 
 void	watcher(t_program *prog)
 {
-	printf("Time: %llu\n", get_time_ms()); // DBG
 	dead_check_loop(prog);
-	printf("Watcher entering Kill_All\n"); // DBG
 	kill_all(prog);
 }
 
@@ -74,11 +72,6 @@ bool	stop_flag_raised(t_p_bool *stop_flag)
 	return (status);
 }
 
-// void	raise_stop_flag(t_p_bool *stop_flag)
-// {
-// 	set_mut_struct_bool(stop_flag, true);
-// }
-
 void	kill_all(t_program *prog)
 {
 	unsigned int	i;
@@ -91,14 +84,4 @@ void	kill_all(t_program *prog)
 		pthread_mutex_unlock(&((prog->philos)[i]).alive.mut);
 		i++;
 	}
-}
-
-void	watcher_announce(t_philo *philo, t_program *prog, char *msg)
-{
-	uint_fast64_t	time;
-
-	pthread_mutex_lock(&prog->speak_lck.mut);
-	time = get_time_ms() - philo->start_time;
-	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
-	pthread_mutex_unlock(&prog->speak_lck.mut);
 }

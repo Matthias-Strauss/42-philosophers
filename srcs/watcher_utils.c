@@ -1,24 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validate_args.c                                    :+:      :+:    :+:   */
+/*   watcher_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/04 17:04:31 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:57:29 by mstrauss         ###   ########.fr       */
+/*   Created: 2024/09/16 21:54:21 by mstrauss          #+#    #+#             */
+/*   Updated: 2024/09/16 21:54:44 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	validate_args(int ac, char **av)
+void	watcher_announce(t_philo *philo, t_program *prog, char *msg)
 {
-	(void)av;
-	validate_arg_count(ac);
-	validate_max_philos(av);
-	validate_positive_num_args(ac, av);
-	validate_lower_time_lim(ac, av);
-	validate_arg_valid_chars(ac, av);
-	return (1);
+	uint_fast64_t	time;
+
+	pthread_mutex_lock(&prog->speak_lck.mut);
+	time = get_time_ms() - philo->start_time;
+	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
+	pthread_mutex_unlock(&prog->speak_lck.mut);
 }

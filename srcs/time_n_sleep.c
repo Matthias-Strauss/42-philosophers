@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:40:10 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 21:53:19 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,6 @@ void	better_sleep(uint_fast64_t ms)
 {
 	uint_fast64_t	now;
 
-	// uint_fast64_t	start;
-	// start = get_time_ms();
-	// if (ms > 10)
-	// 	usleep((ms - 10) * 1000);
 	now = get_time_ms();
 	while ((get_time_ms() - now) <= ms)
 	{
@@ -50,6 +46,4 @@ void	wait_to_start(uint_fast64_t start_time)
 	{
 		better_sleep(sleep_time);
 	}
-	else
-		printf("ERROR: sleep time negative!\n"); // DBG
 }

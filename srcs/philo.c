@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 11:22:41 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:46:07 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 22:12:38 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ void	*philo_routine(void *arg)
 		else if (philo->philo_count % 2 == 0)
 			return_both_forks_odd(philo);
 		increase_amount_eaten(philo);
-		if (satiated(philo) == true)
-			return (NULL);
 		announce(philo, get_run_time(philo), " is sleeping");
 		better_sleep(philo->time_to_sleep);
 		announce(philo, get_run_time(philo), " is thinking");
@@ -47,12 +45,6 @@ void	init_time_offsets(t_philo *philo)
 {
 	wait_to_start(philo->start_time);
 	think(philo);
-	// if (philo->id % 2 == 0)
-	// 	usleep(philo->time_to_eat / 2 * 1000);
-	// else
-	// 	usleep(philo->id % 20);
-	// if (philo->id == philo->philo_count && philo->philo_count % 2 == 1)
-	// 	usleep(philo->time_to_eat * 1.5 * 1000);
 	if (philo->id % 2 == 0 && philo->philo_count % 2 == 0)
 		better_sleep(10);
 	else if (philo->id % 2 != 0 && philo->philo_count % 2 == 0)
@@ -88,22 +80,7 @@ bool	satiated(t_philo *philo)
 
 bool	think(t_philo *philo)
 {
-	// pthread_mutex_lock(&philo->amount_eaten.mut);
-	// if (philo->philo_count % 2 == 1 && philo->amount_eaten.val % 2 == 0
-	// 	&& philo->id == 1)
-	// 	usleep(philo->time_to_eat * 11);
-	// else if (philo->philo_count % 2 == 1 && philo->amount_eaten.val % 2 == 1
-	// 	&& philo->id == philo->philo_count)
-	// 	usleep(philo->time_to_eat * 11);
-	// pthread_mutex_unlock(&philo->amount_eaten.mut);
 	if (philo->id % 2 == 0)
 		usleep(500);
 	return (announce(philo, get_run_time(philo), " is thinking"));
-}
-
-inline void	increase_amount_eaten(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->amount_eaten.mut);
-	philo->amount_eaten.val++;
-	pthread_mutex_unlock(&philo->amount_eaten.mut);
 }

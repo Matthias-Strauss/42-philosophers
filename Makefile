@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/16 21:00:58 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/16 22:11:13 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,11 +34,14 @@ SRC =	time_n_sleep.c \
 		int_to_str.c \
 		validate_args.c \
 		watcher.c \
+		watcher_utils.c \
 		single_philo.c \
 		getter.c \
 		setter.c \
 		philo_utils.c \
-		fork_utils.c
+		fork_utils.c \
+		parsing.c \
+		end.c
 
 HEADERS = philo.h
 

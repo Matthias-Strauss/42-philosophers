@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:27:34 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 22:09:18 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,6 @@ typedef struct s_philo
 	uint_fast64_t		must_eat_amount;
 	uint_fast64_t		id;
 	uint8_t				locks_held;
-	t_waiter			*waiter;
 	t_p_bool			*stop;
 }						t_philo;
 
@@ -117,7 +116,6 @@ typedef struct s_program
 {
 	t_p_bool			forks[MAX_THREADS];
 	t_p_uint_fast8_t	speak_lck;
-	t_waiter			waiter;
 	t_p_bool			stop;
 	pthread_t			threads[MAX_THREADS];
 	t_philo				philos[MAX_THREADS];
