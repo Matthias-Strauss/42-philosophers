@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/14 17:59:47 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/16 11:27:38 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,8 @@ NAME 	= 	philo
 MAX_THRDS = 200
 
 CC		=	cc
-CFLAGS	=	-DDEBUG=false -Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -D_REENTRANT -Ofast -ffast-math -march=native -mtune=native -funroll-loops # -fsanitize=address -fsanitize=undefined
+CFLAGS	=	-DDEBUG=false -Wall -Wextra -Werror -D MAX_THREADS=$(MAX_THRDS) -D_REENTRANT -pthread -Ofast -ffast-math -march=native -mtune=native -funroll-loops  -fsanitize=thread,undefined
+LDFLAGS =	-pthread
 RM		=	rm -rf
 
 INC		=	-Iincludes/
@@ -25,19 +26,21 @@ SRC_DIRS =	./srcs
 vpath %.c $(SRC_DIRS)
 vpath %.h includes
 
-SRC =	good_sleep.c \
+SRC =	time_n_sleep.c \
 		main.c \
-		philo.c \
-		philo2.c \
+		philo_timing_dependent.c \
 		splash_screen.c \
 		str_utils.c \
 		int_to_str.c \
 		validate_args.c \
 		watcher.c \
 		set_mut_struct.c \
-		debug_msg.c \
 		single_philo.c \
-		lock_utils.c
+		get_n_set.c \
+		waiter.c \
+		philo_utils.c
+# lock_utils.c
+# debug_msg.c
 
 HEADERS = philo.h
 

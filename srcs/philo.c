@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 11:35:22 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/14 14:26:55 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/15 23:14:12 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 // // 	t_philo	*philo;
 
 // // 	philo = (t_philo *)arg;
-// // 	// set_mut_struct_uint64_t(&philo->last_meal_time, philo->start_time);
+// // 	// set_mut_struct_uint_fast64_t(&philo->last_meal_time,
+// philo->start_time);
 // // 	wait_to_start(philo->start_time);
 // // 	p_think(philo);
 // // 	if (philo->id % 2 != 0)
@@ -51,20 +52,6 @@
 // // 	die(philo);
 // // 	return (philo);
 // // }
-
-void	wait_to_start(uint64_t start_time)
-{
-	uint64_t	sleep_time;
-
-	sleep_time = start_time - get_time_ms();
-	if (sleep_time > 0)
-	{
-		// printf("Sleeping for: %" PRIu64 "(ms)\n", sleep_time); // DBG
-		better_sleep(sleep_time);
-	}
-	else
-		printf("ERROR: sleep time negative!\n"); // DBG
-}
 
 // bool	p_acquire_utensils(t_philo *philo)
 // {
@@ -131,7 +118,7 @@ void	wait_to_start(uint64_t start_time)
 
 // void	p_eat(t_philo *philo)
 // {
-// 	uint64_t	time;
+// 	uint_fast64_t	time;
 
 // 	announce(philo, " is eating");
 // 	get_lock(LAST_MEAL, philo);
@@ -163,7 +150,7 @@ void	wait_to_start(uint64_t start_time)
 
 // // bool	alive(t_philo *philo)
 // // {
-// // 	uint64_t	time;
+// // 	uint_fast64_t	time;
 
 // // 	if (stop_flag_raised(philo->stop))
 // // 		return (die(philo), false);
@@ -191,9 +178,9 @@ void	wait_to_start(uint64_t start_time)
 // // 	}
 // // }
 
-// // void	announce(t_philo *philo, /*uint64_t time,*/ char *msg)
+// // void	announce(t_philo *philo, /*uint_fast64_t time,*/ char *msg)
 // // {
-// // 	uint64_t	time;
+// // 	uint_fast64_t	time;
 
 // // 	time = get_time_ms() - philo->start_time;
 // // 	get_lock(SPEAK_LOCK, philo);
@@ -203,26 +190,26 @@ void	wait_to_start(uint64_t start_time)
 // // 	return_lock(SPEAK_LOCK, philo);
 // // }
 
-void	die(t_philo *philo)
-{
-	get_lock(ALIVE, philo);
-	philo->alive.val = false;
-	// announce(philo, "\033[0;31m died\033[0m");
-	return_lock(ALIVE, philo);
-	raise_stop_flag(philo->stop);
-	return_all_locks(philo);
-}
+// void	die(t_philo *philo)
+// {
+// 	get_lock(ALIVE, philo);
+// 	philo->alive.val = false;
+// 	// announce(philo, "\033[0;31m died\033[0m");
+// 	return_lock(ALIVE, philo);
+// 	raise_stop_flag(philo->stop);
+// 	return_all_locks(philo);
+// }
 
-void	update_amount_eaten(t_philo *philo)
-{
-	uint64_t	amount;
+// void	update_amount_eaten(t_philo *philo)
+// {
+// 	uint_fast64_t	amount;
 
-	get_lock(AMOUNT_EATEN, philo);
-	// philo->amount_eaten.val += 1;
-	amount = ++philo->amount_eaten.val;
-	return_lock(AMOUNT_EATEN, philo);
-	if (amount == philo->must_eat_amount)
-		raise_stop_flag(philo->stop); // ALL PHILOS MUST FINISH EATING
-}
+// 	get_lock(AMOUNT_EATEN, philo);
+// 	// philo->amount_eaten.val += 1;
+// 	amount = ++philo->amount_eaten.val;
+// 	return_lock(AMOUNT_EATEN, philo);
+// 	if (amount == philo->must_eat_amount)
+// 		raise_stop_flag(philo->stop); // ALL PHILOS MUST FINISH EATING
+// }
 
 // // NEEDS TO EXIT ONLY IF ALL HAVE EATEN

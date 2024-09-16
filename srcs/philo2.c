@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 19:20:31 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/14 20:21:39 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/15 17:20:43 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	wait_to_start(philo->start_time);
 	if (philo->id % 2 == 0)
-		usleep(philo->time_to_eat / 2); // TIME
+		usleep(philo->time_to_eat * 0.9); // TIME
 	think(philo);
 	while (!stop(philo))
 	{
@@ -109,8 +109,8 @@ bool	eat_odd(t_philo *philo)
 
 bool	consume_food(t_philo *philo)
 {
-	uint64_t	time;
-	uint64_t	timely_death;
+	uint_fast64_t	time;
+	uint_fast64_t	timely_death;
 
 	if (stop(philo))
 		return (false);
@@ -139,8 +139,8 @@ bool	consume_food(t_philo *philo)
 
 bool	sleeep(t_philo *philo)
 {
-	uint64_t	time;
-	uint64_t	timely_death;
+	uint_fast64_t	time;
+	uint_fast64_t	timely_death;
 
 	if (stop(philo))
 		return (false);
@@ -169,15 +169,15 @@ bool	think(t_philo *philo)
 	return (true);
 }
 
-bool	announce(t_philo *philo, uint64_t time, char *msg)
+bool	announce(t_philo *philo, uint_fast64_t time, char *msg)
 {
 	get_lock(SPEAK_LOCK, philo);
 	get_lock(STOP, philo);
 	if (philo->stop->val == true)
 		return (return_all_locks(philo), false);
 	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
-	return_lock(STOP, philo);
-	return_lock(SPEAK_LOCK, philo);
+
+	return
 	return (true);
 }
 

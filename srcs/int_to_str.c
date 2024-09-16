@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 18:51:49 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/08/30 22:35:00 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/15 16:28:45 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,16 @@ static int	count_digit(int n)
 	return (char_count);
 }
 
-static uint64_t	is_pos_num(int n)
+static uint_fast64_t	is_pos_num(int n)
 {
 	if (n < 0)
-		return ((uint64_t)n * -1);
+		return ((uint_fast64_t)n * -1);
 	else
-		return ((uint64_t)n);
+		return ((uint_fast64_t)n);
 }
 
-static char	*int_to_str_conv(char *s, uint64_t n_unsg, uint64_t char_count,
-		uint64_t neg)
+static char	*int_to_str_conv(char *s, uint_fast64_t n_unsg,
+		uint_fast64_t char_count, uint_fast64_t neg)
 {
 	if (neg == 1)
 		*s = '-';
@@ -76,10 +76,10 @@ static char	*int_to_str_conv(char *s, uint64_t n_unsg, uint64_t char_count,
 /// @return		NULL if the allocation fails.
 char	*int_to_str(int n)
 {
-	uint64_t	char_count;
-	uint64_t	neg;
-	char		*ptr;
-	uint64_t	n_unsg;
+	uint_fast64_t	char_count;
+	uint_fast64_t	neg;
+	char			*ptr;
+	uint_fast64_t	n_unsg;
 
 	neg = 0;
 	if (n == 0)

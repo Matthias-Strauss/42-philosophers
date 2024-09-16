@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 16:43:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/10 15:20:19 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/15 16:28:44 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	destroy_p_bool(t_p_bool *var)
 /// @brief Initializes a protected variable and its corresponding mutex.
 /// @param var Struct containing the var and the mutex
 /// @param state The initial uint value
-void	init_p_uint64_t(t_p_uint64_t *var, bool state)
+void	init_p_uint_fast64_t(t_p_uint_fast64_t *var, bool state)
 {
 	var->val = state;
 	pthread_mutex_init(&var->mut, NULL);
@@ -39,7 +39,7 @@ void	init_p_uint64_t(t_p_uint64_t *var, bool state)
 
 /// @brief Destroys a protected variable and its corresponding mutex.
 /// @param var The protected variable struct
-void	destroy_p_uint64_t(t_p_uint64_t *var)
+void	destroy_p_uint_fast64_t(t_p_uint_fast64_t *var)
 {
 	pthread_mutex_destroy(&var->mut);
 }

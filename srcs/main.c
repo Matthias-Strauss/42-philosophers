@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/14 16:39:42 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/15 23:31:19 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,25 @@ void	init_prog(char **av, t_program *prog)
 	else
 		prog->must_eat_amount = -1;
 	set_mut_struct_bool(&prog->stop, false);
-	set_mut_struct_uint64_t(&prog->waiter, 202);
 }
 
 void	init_philos(t_program *prog)
 {
 	t_philo			*philos;
-	uint64_t		start_time;
+	uint_fast64_t	start_time;
 	unsigned int	i;
 
 	i = -1;
 	philos = prog->philos;
-	start_time = get_time_ms() + (uint64_t)1000;
+	start_time = get_time_ms() + (uint_fast64_t)1000;
 	while (++i < prog->amount)
 	{
 		philos[i].id = i + 1;
 		set_mut_struct_bool(&philos[i].alive, true);
 		philos[i].start_time = start_time;
-		set_mut_struct_uint64_t(&philos[i].last_meal_time,
+		set_mut_struct_uint_fast64_t(&philos[i].last_meal_time,
 			philos[i].start_time);
-		set_mut_struct_uint64_t(&philos[i].amount_eaten, 0);
+		set_mut_struct_uint_fast64_t(&philos[i].amount_eaten, 0);
 		philos[i].philo_count = prog->amount;
 		philos[i].time_to_die = prog->time_to_die;
 		philos[i].time_to_eat = prog->time_to_eat;
@@ -88,7 +87,7 @@ void	init_mutexs(t_program *prog)
 		}
 		i++;
 	}
-	if (pthread_mutex_init(&prog->speak_lck, NULL) != 0)
+	if (pthread_mutex_init(&prog->speak_lck.mut, NULL) != 0)
 	{
 		printf("ERROR while initializing Mutex.\n");
 		exit(1);
@@ -136,14 +135,14 @@ void	launch_threads(t_program *prog)
 
 // void	set_start_time(t_program *prog)
 // {
-// 	uint64_t	i;
-// 	uint64_t	start_time;
-// 	uint64_t	time_delta;
+// 	uint_fast64_t	i;
+// 	uint_fast64_t	start_time;
+// 	uint_fast64_t	time_delta;
 // 	t_philo		*philo;
 
 // 	i = 0;
 // 	philo = prog->philos;
-// 	start_time = get_time_ms() + (uint64_t)1000;
+// 	start_time = get_time_ms() + (uint_fast64_t)1000;
 // 	// printf("Current time: %" PRIu64 "\n", get_time_ms()); // DBG
 // 	// printf("Start   time: %" PRIu64 "\n", start_time);    // DBG
 // 	time_delta = (prog->time_to_die - (prog->time_to_eat
@@ -154,12 +153,21 @@ void	launch_threads(t_program *prog)
 // 	while (i < prog->amount)
 // 	{
 // 		(philo[i]).start_time = start_time + (time_delta * i);
-// 		set_mut_struct_uint64_t(&philo[i].last_meal_time,
+// 		set_mut_struct_uint_fast64_t(&philo[i].last_meal_time,
 // 			(philo[0]).start_time);
 // 		// takes the time from the first philo
 // 		i++;
 // 	}
 // }
+
+void	init_waiter(t_program *prog)
+{
+	prog->waiter.group = 0;
+	prog->waiter.skip = 0;
+	prog->waiter.count = 0;
+	prog->waiter.last_skipper = 0;
+	prog->waiter.someone_skipped = 0;
+}
 
 int	main(int ac, char **av)
 {
@@ -170,6 +178,7 @@ int	main(int ac, char **av)
 	prog.amount = str_to_int(av[1]);
 	init_mutexs(&prog);
 	init_prog(av, &prog);
+	init_waiter(&prog);
 	init_philos(&prog);
 	// set_start_time(&prog);
 	launch_threads(&prog);
@@ -191,7 +200,7 @@ void	destroy_all_muts(t_program *prog)
 		pthread_mutex_destroy(&prog->philos[i].last_meal_time.mut);
 		i++;
 	}
-	pthread_mutex_destroy(&prog->speak_lck);
+	pthread_mutex_destroy(&prog->speak_lck.mut);
 	pthread_mutex_destroy(&prog->stop.mut);
 	pthread_mutex_destroy(&prog->waiter.mut);
 }
