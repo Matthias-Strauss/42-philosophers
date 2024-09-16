@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 22:12:16 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 23:06:58 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ void	init_philos(t_program *prog)
 		philos[i].r_fork = &prog->forks[(i + 1) % prog->amount];
 		philos[i].speak_lck = &prog->speak_lck;
 		philos[i].stop = &prog->stop;
-		philos[i].locks_held = (uint8_t)0;
 	}
 }
 
@@ -77,7 +76,7 @@ void	init_mutexs(t_program *prog)
 		i++;
 	}
 	if (pthread_mutex_init(&prog->speak_lck.mut, NULL) != 0
-		|| pthread_mutex_init(&(prog->stop.mut), NULL) != 0)
+		|| pthread_mutex_init(&prog->stop.mut, NULL) != 0)
 		printf("ERROR while initializing Mutex.\n");
 	return ;
 }

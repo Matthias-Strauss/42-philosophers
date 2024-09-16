@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:58:47 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 23:15:23 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,26 +21,27 @@ void	watcher(t_program *prog)
 void	dead_check_loop(t_program *prog)
 {
 	uint_fast64_t	i;
-	uint_fast64_t	amount;
-	t_philo			*tmp;
+	uint_fast64_t	least_eaten;
+	uint_fast64_t	current_eaten;
 
-	amount = prog->amount;
-	tmp = prog->philos;
 	wait_to_start(prog->philos[0].start_time);
-	while (!stop_flag_raised(&prog->stop))
+	while (true)
 	{
-		i = 0;
-		while (!stop_flag_raised(&prog->stop) && i < amount)
+		i = -1;
+		least_eaten = UINT_FAST64_MAX;
+		while (!stop_flag_raised(&prog->stop) && ++i < prog->amount)
 		{
-			if (!check_starvation(&tmp[i], prog)
+			current_eaten = get_amount_eaten(&prog->philos[i]);
+			if (current_eaten < least_eaten)
+				least_eaten = current_eaten;
+			if (!check_starvation(&prog->philos[i], prog)
 				|| stop_flag_raised(&prog->stop))
-			{
-				pthread_mutex_lock(&prog->stop.mut);
-				prog->stop.val = true;
-				pthread_mutex_unlock(&prog->stop.mut);
-				break ;
-			}
-			i++;
+				return (raise_stop_flag(&prog->stop));
+		}
+		if (least_eaten >= prog->must_eat_amount)
+		{
+			raise_stop_flag(&prog->stop);
+			return ;
 		}
 	}
 }
@@ -60,6 +61,13 @@ bool	check_starvation(t_philo *philo, t_program *prog)
 	}
 	pthread_mutex_unlock(&philo->last_meal_time.mut);
 	return (true);
+}
+
+void	raise_stop_flag(t_p_bool *stop_flag)
+{
+	pthread_mutex_lock(&stop_flag->mut);
+	stop_flag->val = true;
+	pthread_mutex_unlock(&stop_flag->mut);
 }
 
 bool	stop_flag_raised(t_p_bool *stop_flag)
