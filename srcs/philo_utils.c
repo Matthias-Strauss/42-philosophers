@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 22:50:39 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/15 23:38:57 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:31:17 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,6 @@ void	update_amount_eaten(t_philo *philo)
 	pthread_mutex_unlock(&philo->amount_eaten.mut);
 	// if (amount == philo->must_eat_amount)
 	// 	raise_stop_flag(philo->stop); // ALL PHILOS MUST FINISH EATING
-}
-
-bool	announce(t_philo *philo, uint_fast64_t time, char *msg)
-{
-	pthread_mutex_lock(&philo->speak_lck->mut);
-	pthread_mutex_lock(&philo->stop->mut);
-	if (philo->stop->val == true)
-		return (pthread_mutex_unlock(&philo->stop->mut),
-				pthread_mutex_unlock(&philo->speak_lck->mut),
-				/*return_all_locks(philo),*/ false);
-	printf("%7" PRIu64 " %" PRIu64 "%s\n", time, philo->id, msg);
-	pthread_mutex_unlock(&philo->stop->mut);
-	pthread_mutex_unlock(&philo->speak_lck->mut);
-	return (true);
 }
 
 bool	return_all_locks(t_philo *philo)

@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 16:05:09 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 12:41:38 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 15:43:32 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,13 @@ inline void	set_amount_eaten(t_philo *philo, uint_fast64_t amount)
 {
 	pthread_mutex_lock(&philo->amount_eaten.mut);
 	philo->amount_eaten.val = amount;
+	pthread_mutex_unlock(&philo->amount_eaten.mut);
+}
+
+inline void	increase_amount_eaten(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->amount_eaten.mut);
+	philo->amount_eaten.val++;
 	pthread_mutex_unlock(&philo->amount_eaten.mut);
 }
 

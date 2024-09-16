@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/15 23:40:43 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 15:54:08 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ typedef struct s_waiter
 	uint_fast8_t		last_skipper;
 	bool				someone_skipped;
 }						t_waiter;
+
 typedef struct s_philo
 {
 	pthread_mutex_t		*l_fork;
@@ -144,6 +145,8 @@ bool					stop(t_philo *philo);
 
 void					*single_philo_routine(void *arg);
 bool					request_forks(t_philo *philo);
+bool					satiated(t_philo *philo);
+void					increase_amount_eaten(t_philo *philo);
 
 /* -------------------------------- get n set ------------------------------- */
 

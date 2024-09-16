@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 12:20:47 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:04:08 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,13 @@ void	better_sleep(uint_fast64_t ms)
 	return ;
 }
 
-inline void	wait_to_start(uint_fast64_t start_time)
+void	wait_to_start(uint_fast64_t start_time)
 {
 	uint_fast64_t	sleep_time;
 
 	sleep_time = start_time - get_time_ms();
 	if (sleep_time > 0)
 	{
-		// printf("Sleeping for: %" PRIu64 "(ms)\n", sleep_time); // DBG
 		better_sleep(sleep_time);
 	}
 	else
