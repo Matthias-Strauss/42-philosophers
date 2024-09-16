@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 11:22:41 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:21:39 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/16 21:46:07 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,18 @@ void	*philo_routine(void *arg)
 	init_time_offsets(philo);
 	while (carry_on(philo) == true)
 	{
-		if (philo->id % 2 == 0)
+		if (philo->id % 2 == 0 || philo->id == philo->philo_count)
 			get_both_forks_even(philo);
-		else
+		else if (philo->philo_count % 2 == 0)
 			get_both_forks_odd(philo);
 		pthread_mutex_lock(&philo->last_meal_time.mut);
 		philo->last_meal_time.val = get_time_ms();
 		announce(philo, get_run_time(philo), " is eating");
 		pthread_mutex_unlock(&philo->last_meal_time.mut);
 		better_sleep(philo->time_to_eat);
-		if (philo->id % 2 == 0)
+		if (philo->id % 2 == 0 || philo->id == philo->philo_count)
 			return_both_forks_even(philo);
-		else
+		else if (philo->philo_count % 2 == 0)
 			return_both_forks_odd(philo);
 		increase_amount_eaten(philo);
 		if (satiated(philo) == true)
