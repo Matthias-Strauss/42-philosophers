@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 17:59:00 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 18:07:51 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 18:22:50 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,9 @@ int	init_one_philo(t_program *prog, int i)
 
 int	init_mutexs(t_program *prog)
 {
-	t_p_bool		*forks;
 	unsigned int	i;
 
 	i = 0;
-	forks = prog->forks;
 	while (i < prog->amount)
 	{
 		if (init_one_philo(prog, i))
