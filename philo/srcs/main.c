@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 17:26:53 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 17:58:57 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,60 +55,33 @@ void	init_philos(t_program *prog)
 	}
 }
 
-void	init_mutexs(t_program *prog)
-{
-	t_p_bool		*forks;
-	unsigned int	i;
-
-	i = 0;
-	forks = prog->forks;
-	while (i < prog->amount)
-	{
-		if (pthread_mutex_init(&forks[i].mut, NULL) != 0
-			|| pthread_mutex_init(&prog->philos[i].alive.mut, NULL) != 0
-			|| pthread_mutex_init(&prog->philos[i].last_meal_time.mut,
-				NULL) != 0
-			|| pthread_mutex_init(&prog->philos[i].amount_eaten.mut, NULL) != 0)
-		{
-			printf("ERROR while initializing Mutex.\n");
-			return ;
-		}
-		i++;
-	}
-	if (pthread_mutex_init(&prog->speak_lck.mut, NULL) != 0
-		|| pthread_mutex_init(&prog->stop.mut, NULL) != 0
-		|| pthread_mutex_init(&prog->start.mut, NULL) != 0)
-		printf("ERROR while initializing Mutex.\n");
-	return ;
-}
-
-void	launch_threads(t_program *prog)
+int	launch_threads(t_program *prog)
 {
 	unsigned int	i;
 
-	i = 0;
+	i = -1;
 	pthread_mutex_lock(&prog->start.mut);
-	if (prog->amount == 1 && pthread_create(&(prog->threads[i]), NULL,
-			single_philo_routine, &(prog->philos[i])) != 0)
-	{
-		printf("Error while launching thread.\n");
-		return ;
-	}
+	if (prog->amount == 1 && pthread_create(&(prog->threads[0]), NULL,
+			single_philo_routine, &(prog->philos[0])) != 0)
+		return (pthread_mutex_unlock(&prog->start.mut), printf("Error\n"), 1);
 	if (prog->amount > 1)
 	{
-		while (i < prog->amount)
+		while (++i < prog->amount)
 		{
 			if (pthread_create(&(prog->threads[i]), NULL, philo_routine,
 					&(prog->philos[i])) != 0)
 			{
-				printf("Error while launching thread.\n");
-				return ;
+				pthread_mutex_unlock(&prog->start.mut);
+				raise_stop_flag(&prog->stop);
+				while (i-- > 0)
+					pthread_join(prog->threads[i], NULL);
+				return (printf("Error while launching thread.\n"), 1);
 			}
-			i++;
 		}
 	}
 	prog->start_time = get_time_ms();
 	pthread_mutex_unlock(&prog->start.mut);
+	return (0);
 }
 
 int	main(int ac, char **av)
@@ -116,12 +89,15 @@ int	main(int ac, char **av)
 	t_program	prog;
 
 	print_splash_screen();
-	validate_args(ac, av);
+	if (validate_args(ac, av))
+		return (1);
 	prog.amount = str_to_int(av[1]);
-	init_mutexs(&prog);
+	if (init_mutexs(&prog))
+		return (1);
 	init_prog(av, &prog);
 	init_philos(&prog);
-	launch_threads(&prog);
+	if (launch_threads(&prog))
+		return (destroy_all_muts(&prog), 1);
 	watcher(&prog);
 	rejoin_threads(&prog);
 	destroy_all_muts(&prog);

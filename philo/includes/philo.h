@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 16:03:13 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 17:36:35 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,17 +176,17 @@ void					destroy_all_muts(t_program *prog);
 
 /* --------------------------- Argument Validation -------------------------- */
 int						validate_args(int ac, char **av);
-void					validate_arg_valid_chars(int ac, char **av);
-void					validate_max_philos(char **av);
-void					validate_arg_count(int count);
-void					validate_positive_num_args(int ac, char **av);
-void					validate_lower_time_lim(int ac, char **av);
+int						validate_arg_valid_chars(int ac, char **av);
+int						validate_max_philos(char **av);
+int						validate_arg_count(int count);
+int						validate_positive_num_args(int ac, char **av);
+int						validate_lower_time_lim(int ac, char **av);
 
 /* ----------------------------- Initialization ----------------------------- */
-void					init_mutexs(t_program *prog);
+int						init_mutexs(t_program *prog);
 void					init_prog(char **av, t_program *prog);
 void					init_philos(t_program *prog);
-void					launch_threads(t_program *prog);
+int						launch_threads(t_program *prog);
 
 /* --------------------------------- Watcher -------------------------------- */
 void					watcher(t_program *prog);

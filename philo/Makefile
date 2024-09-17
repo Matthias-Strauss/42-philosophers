@@ -6,7 +6,7 @@
 #    By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/04 14:31:32 by mstrauss          #+#    #+#              #
-#    Updated: 2024/09/16 23:28:31 by mstrauss         ###   ########.fr        #
+#    Updated: 2024/09/17 17:58:47 by mstrauss         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,8 @@ SRC =	time_n_sleep.c \
 		philo_utils.c \
 		fork_utils.c \
 		parsing.c \
-		end.c
+		end.c \
+		mutexes.c
 
 HEADERS = philo.h
 
