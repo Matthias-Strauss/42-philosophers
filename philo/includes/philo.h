@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 17:36:35 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 18:38:28 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@
 #  define DEBUG_FLAG false
 # endif
 
-# include <inttypes.h> // remove
+# include <inttypes.h>
 # include <pthread.h>
-# include <stdbool.h> // Add this line
+# include <stdbool.h>
 # include <stddef.h>
 # include <stdint.h>
 # include <stdio.h>
