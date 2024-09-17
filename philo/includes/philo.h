@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 15:12:10 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:03:13 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ typedef struct s_philo
 	t_p_uint_fast64_t	amount_eaten;
 	t_p_bool			alive;
 	uint_fast64_t		philo_count;
-	uint_fast64_t		start_time;
+	uint_fast64_t		*start_time;
 	uint_fast64_t		time_to_die;
 	uint_fast64_t		time_to_eat;
 	uint_fast64_t		time_to_sleep;
@@ -110,6 +110,7 @@ typedef struct s_philo
 	uint_fast64_t		id;
 	uint8_t				locks_held;
 	t_p_bool			*stop;
+	t_p_bool			*start;
 }						t_philo;
 
 typedef struct s_program
@@ -117,6 +118,8 @@ typedef struct s_program
 	t_p_bool			forks[MAX_THREADS];
 	t_p_uint_fast8_t	speak_lck;
 	t_p_bool			stop;
+	t_p_bool			start;
+	uint64_t			start_time;
 	pthread_t			threads[MAX_THREADS];
 	t_philo				philos[MAX_THREADS];
 	uint_fast64_t		amount;

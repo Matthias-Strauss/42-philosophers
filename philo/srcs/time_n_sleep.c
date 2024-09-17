@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 20:12:37 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 21:53:19 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:24:00 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ inline uint_fast64_t	get_time_ms(void)
 
 inline uint_fast64_t	get_run_time(t_philo *philo)
 {
-	return (get_time_ms() - philo->start_time);
+	return (get_time_ms() - *philo->start_time);
 }
 
 void	better_sleep(uint_fast64_t ms)
@@ -30,7 +30,7 @@ void	better_sleep(uint_fast64_t ms)
 	uint_fast64_t	now;
 
 	now = get_time_ms();
-	while ((get_time_ms() - now) <= ms)
+	while ((get_time_ms() - now) < ms)
 	{
 		usleep(500);
 	}

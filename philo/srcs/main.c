@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 14:34:42 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 23:06:58 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 17:26:53 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,17 @@ void	init_prog(char **av, t_program *prog)
 void	init_philos(t_program *prog)
 {
 	t_philo			*philos;
-	uint_fast64_t	start_time;
 	unsigned int	i;
 
 	i = -1;
 	philos = prog->philos;
-	start_time = get_time_ms() + (uint_fast64_t)3000;
+	prog->start_time = UINT_FAST64_MAX;
 	while (++i < prog->amount)
 	{
 		philos[i].id = i + 1;
 		set_alive_val(&philos[i], true);
-		philos[i].start_time = start_time;
-		set_last_meal_time(&philos[i], philos[i].start_time);
+		philos[i].start_time = &prog->start_time;
+		set_last_meal_time(&philos[i], *philos[i].start_time);
 		set_amount_eaten(&philos[i], 0);
 		philos[i].philo_count = prog->amount;
 		philos[i].time_to_die = prog->time_to_die;
@@ -52,6 +51,7 @@ void	init_philos(t_program *prog)
 		philos[i].r_fork = &prog->forks[(i + 1) % prog->amount];
 		philos[i].speak_lck = &prog->speak_lck;
 		philos[i].stop = &prog->stop;
+		philos[i].start = &prog->start;
 	}
 }
 
@@ -76,7 +76,8 @@ void	init_mutexs(t_program *prog)
 		i++;
 	}
 	if (pthread_mutex_init(&prog->speak_lck.mut, NULL) != 0
-		|| pthread_mutex_init(&prog->stop.mut, NULL) != 0)
+		|| pthread_mutex_init(&prog->stop.mut, NULL) != 0
+		|| pthread_mutex_init(&prog->start.mut, NULL) != 0)
 		printf("ERROR while initializing Mutex.\n");
 	return ;
 }
@@ -86,16 +87,14 @@ void	launch_threads(t_program *prog)
 	unsigned int	i;
 
 	i = 0;
-	if (prog->amount == 1)
+	pthread_mutex_lock(&prog->start.mut);
+	if (prog->amount == 1 && pthread_create(&(prog->threads[i]), NULL,
+			single_philo_routine, &(prog->philos[i])) != 0)
 	{
-		if (pthread_create(&(prog->threads[i]), NULL, single_philo_routine,
-				&(prog->philos[i])) != 0)
-		{
-			printf("Error while launching thread.\n");
-			exit(2);
-		}
+		printf("Error while launching thread.\n");
+		return ;
 	}
-	else
+	if (prog->amount > 1)
 	{
 		while (i < prog->amount)
 		{
@@ -103,11 +102,13 @@ void	launch_threads(t_program *prog)
 					&(prog->philos[i])) != 0)
 			{
 				printf("Error while launching thread.\n");
-				exit(2);
+				return ;
 			}
 			i++;
 		}
 	}
+	prog->start_time = get_time_ms();
+	pthread_mutex_unlock(&prog->start.mut);
 }
 
 int	main(int ac, char **av)

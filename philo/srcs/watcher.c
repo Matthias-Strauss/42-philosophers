@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 17:18:24 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 23:32:16 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:14:32 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	dead_check_loop(t_program *prog)
 	uint_fast64_t	least_eaten;
 	uint_fast64_t	current_eaten;
 
-	wait_to_start(prog->philos[0].start_time);
+	usleep(1000);
 	while (true)
 	{
 		i = -1;
