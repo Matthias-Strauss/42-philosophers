@@ -6,18 +6,18 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 20:47:55 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 20:50:51 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 14:56:33 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-inline void	get_voice(t_philo *philo)
+void	get_voice(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->speak_lck->mut);
 }
 
-inline uint_fast64_t	get_last_meal_time(t_philo *philo)
+uint_fast64_t	get_last_meal_time(t_philo *philo)
 {
 	uint_fast64_t	time;
 
@@ -27,7 +27,7 @@ inline uint_fast64_t	get_last_meal_time(t_philo *philo)
 	return (time);
 }
 
-inline uint_fast64_t	get_amount_eaten(t_philo *philo)
+uint_fast64_t	get_amount_eaten(t_philo *philo)
 {
 	uint_fast64_t	amount;
 
@@ -37,7 +37,7 @@ inline uint_fast64_t	get_amount_eaten(t_philo *philo)
 	return (amount);
 }
 
-inline bool	get_alive_val(t_philo *philo)
+bool	get_alive_val(t_philo *philo)
 {
 	bool	alive;
 
@@ -47,7 +47,7 @@ inline bool	get_alive_val(t_philo *philo)
 	return (alive);
 }
 
-inline bool	carry_on(t_philo *philo)
+bool	carry_on(t_philo *philo)
 {
 	bool	value;
 
