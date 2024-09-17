@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/17 14:31:14 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 15:12:10 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,5 +200,10 @@ int						str_to_int(const char *str);
 char					*int_to_str(int n);
 int						is_digit(int num);
 int						is_space(int c);
+
+void					get_both_forks_odd(t_philo *philo);
+void					get_both_forks_even(t_philo *philo);
+void					return_both_forks_odd(t_philo *philo);
+void					return_both_forks_even(t_philo *philo);
 
 #endif
