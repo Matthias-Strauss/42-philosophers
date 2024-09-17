@@ -6,7 +6,7 @@
 /*   By: mstrauss <mstrauss@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/04 15:51:36 by mstrauss          #+#    #+#             */
-/*   Updated: 2024/09/16 22:09:18 by mstrauss         ###   ########.fr       */
+/*   Updated: 2024/09/17 14:31:14 by mstrauss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,61 +127,49 @@ typedef struct s_program
 }						t_program;
 
 /* -------------------------------------------------------------------------- */
-/*                               PHILO RREFACTOR                              */
+/*                                  FUNCTIONS                                 */
 /* -------------------------------------------------------------------------- */
 
-/* ---------------------------------- PHILO --------------------------------- */
+/* ---------------------------------- Philo --------------------------------- */
+void					*single_philo_routine(void *arg);
 void					*philo_routine(void *arg);
 void					init_time_offsets(t_philo *philo);
-bool					eat_odd(t_philo *philo);
-bool					eat_even(t_philo *philo);
-bool					consume_food(t_philo *philo);
-bool					sleeep(t_philo *philo);
+void					wait_to_start(uint_fast64_t start_time);
 bool					think(t_philo *philo);
 bool					announce(t_philo *philo, uint_fast64_t time, char *msg);
 bool					stop(t_philo *philo);
 
-void					*single_philo_routine(void *arg);
-bool					request_forks(t_philo *philo);
 bool					satiated(t_philo *philo);
-void					increase_amount_eaten(t_philo *philo);
+uint_fast64_t			increase_amount_eaten(t_philo *philo);
 
-/* -------------------------------- get n set ------------------------------- */
-
-void					get_both_forks_odd(t_philo *philo);
-void					get_both_forks_even(t_philo *philo);
-void					return_both_forks_odd(t_philo *philo);
-void					return_both_forks_even(t_philo *philo);
-void					get_l_fork(t_philo *philo);
-void					get_r_fork(t_philo *philo);
-void					get_voice(t_philo *philo);
-void					return_voice(t_philo *philo);
-uint_fast64_t			get_last_meal_time(t_philo *philo);
-void					set_last_meal_time(t_philo *philo, uint_fast64_t time);
-uint_fast64_t			get_amount_eaten(t_philo *philo);
-void					set_amount_eaten(t_philo *philo, uint_fast64_t amount);
-bool					get_alive(t_philo *philo);
-void					set_alive_val(t_philo *philo, bool value);
-bool					carry_on(t_philo *philo);
-void					set_stop(t_philo *philo, bool stop);
+bool					alive(t_philo *philo);
+void					die(t_philo *philo);
+uint_fast64_t			update_amount_eaten(t_philo *philo);
 
 /* ---------------------------------- TIME ---------------------------------- */
+uint_fast64_t			get_time_ms(void);
 uint_fast64_t			get_run_time(t_philo *philo);
+void					better_sleep(uint_fast64_t ms);
 
-/* --------------------------- GETTERS and SETTERS -------------------------- */
-void					get_l_fork(t_philo *philo);
-void					get_r_fork(t_philo *philo);
-void					get_voice(t_philo *philo);
-void					return_voice(t_philo *philo);
+/* --------------------------- Getters and Setters -------------------------- */
 uint_fast64_t			get_last_meal_time(t_philo *philo);
-void					set_last_meal_time(t_philo *philo, uint_fast64_t time);
 uint_fast64_t			get_amount_eaten(t_philo *philo);
-void					set_amount_eaten(t_philo *philo, uint_fast64_t amount);
+void					get_voice(t_philo *philo);
 bool					get_alive_val(t_philo *philo);
+void					return_voice(t_philo *philo);
+void					set_last_meal_time(t_philo *philo, uint_fast64_t time);
+void					set_amount_eaten(t_philo *philo, uint_fast64_t amount);
 void					set_alive_val(t_philo *philo, bool value);
 
-bool					carry_on(t_philo *philo);
 void					set_stop(t_philo *philo, bool stop);
+bool					carry_on(t_philo *philo);
+
+/* ---------------------------------- Main ---------------------------------- */
+int						main(int ac, char **av);
+void					print_splash_screen(void);
+void					set_start_time(t_program *prog);
+void					rejoin_threads(t_program *prog);
+void					destroy_all_muts(t_program *prog);
 
 /* --------------------------- Argument Validation -------------------------- */
 int						validate_args(int ac, char **av);
@@ -197,31 +185,6 @@ void					init_prog(char **av, t_program *prog);
 void					init_philos(t_program *prog);
 void					launch_threads(t_program *prog);
 
-/* -------------------------------------------------------------------------- */
-/*                                  FUNCTIONS                                 */
-/* -------------------------------------------------------------------------- */
-int						main(int ac, char **av);
-void					print_splash_screen(void);
-uint_fast64_t			get_time_ms(void);
-void					better_sleep(uint_fast64_t ms);
-void					set_start_time(t_program *prog);
-void					destroy_all_muts(t_program *prog);
-bool					set_mut_struct_bool(t_p_bool *pair, bool value);
-uint_fast64_t			set_mut_struct_uint_fast64_t(t_p_uint_fast64_t *pair,
-							uint_fast64_t value);
-void					debug_msg(char *msg, t_philo *philo);
-char					*int_to_str(int n);
-void					wait_to_start(uint_fast64_t start_time);
-void					destroy_all_muts(t_program *prog);
-void					rejoin_threads(t_program *prog);
-// bool					get_lock(t_mutex_index mutex_index, t_philo *philo);
-bool					return_lock(t_mutex_index mutex_index, t_philo *philo);
-bool					return_all_locks(t_philo *philo);
-
-bool					alive(t_philo *philo);
-void					die(t_philo *philo);
-void					update_amount_eaten(t_philo *philo);
-
 /* --------------------------------- Watcher -------------------------------- */
 void					watcher(t_program *prog);
 void					dead_check_loop(t_program *prog);
@@ -232,13 +195,10 @@ void					raise_stop_flag(t_p_bool *stop_flag);
 void					watcher_announce(t_philo *philo, t_program *prog,
 							char *msg);
 
-/* ---------------------------------- Utils --------------------------------- */
+/* ------------------------------- Char Utils ------------------------------- */
 int						str_to_int(const char *str);
+char					*int_to_str(int n);
 int						is_digit(int num);
 int						is_space(int c);
-
-/* -------------------------------------------------------------------------- */
-/*                               FUNCTIONS                              */
-/* -------------------------------------------------------------------------- */
 
 #endif
